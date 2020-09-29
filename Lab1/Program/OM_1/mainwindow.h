@@ -11,6 +11,7 @@
 #include "ColumnNameChanger.h"
 #include "ColumnDelegateCloner.h"
 
+#include "VariableNameGiver.hpp"
 #include "DelegateController.h"
 
 #include "LabelHeaderView.h"
@@ -51,8 +52,11 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-    ObjectiveFunction getFunctionCoeff() const;
-    std::vector<ConstraintRow> getConstrains() const;
+    ObjectiveFunction function() const;
+    std::vector<ConstraintRow> constrains() const;
+
+    void setFunction(const ObjectiveFunction& funct);
+    void setConstrains(const std::vector<ConstraintRow>&);
 
 signals:
     void dataEntered();

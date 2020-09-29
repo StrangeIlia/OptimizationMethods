@@ -24,6 +24,7 @@ void ColumnNameChanger::nameChange(Qt::Orientation orientation, int first, int l
             }
         }
     }
+    if(groupAndIndex.empty()) return;
 
     for(int i = 0; i != first; ++i) {
         QVariant variant = trackedModel->headerData(i, orientation, HeaderInfo::TypeRole);
@@ -52,11 +53,11 @@ void ColumnNameChanger::nameChange(Qt::Orientation orientation, int first, int l
     /// Не нашел способа определить, какие именно данные изменились, поэтому отключаю прием события
     disconnect(trackedModel, SIGNAL(headerDataChanged(Qt::Orientation, int, int)), this, SLOT(nameChange(Qt::Orientation, int, int)));
 
-    auto listKeys = groupAndIndex.keys();
+    auto listKeys = groupAndIndex.uniqueKeys();
     for(int i = 0; i != listKeys.size(); ++i) {
         auto pairIter = groupAndIndex.equal_range(listKeys[i]);
-        for(int j = 0; pairIter.first != pairIter.second; ++j, ++pairIter.first)
-            trackedModel->setHeaderData(pairIter.first.value(), orientation, pairIter.first.key()->getName(j));
+        for(; pairIter.first != pairIter.second; ++pairIter.first)
+            trackedModel->setHeaderData(pairIter.first.value(), orientation, pairIter.first.key()->getName(pairIter.first.value()));
     }
 
     /// А затем снова включаю

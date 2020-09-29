@@ -1,16 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-class VariableNameGiver : public AbstractNameGiver {
-public:
-    QString getName(int index) override {
-        QString str = "x<span style=\" vertical-align:sub;\">";
-        str += QString::number(index + 1);
-        str += "</span>";
-        return str;
-    }
-};
-
 class RowNameGiver : public AbstractNameGiver {
 public:
     QString getName(int index) override {
@@ -80,13 +70,16 @@ MainWindow::MainWindow(QWidget *parent)
     ui->matrix->horizontalHeaderItem(0)->setData(HeaderInfo::TypeRole, variableInfo);
     ui->matrix->horizontalHeaderItem(1)->setData(HeaderInfo::TypeRole, variableInfo);
 
+
     HeaderInfo relatationInfo;
+    relatationInfo.setGroup(1);
     relatationInfo[ColumnsType] = Relatation;
     ui->matrix->horizontalHeaderItem(2)->setData(HeaderInfo::TypeRole, relatationInfo);
 
     HeaderInfo freeMemberInfo;
-    relatationInfo[ColumnsType] = FreeMember;
-    ui->matrix->horizontalHeaderItem(2)->setData(HeaderInfo::TypeRole, relatationInfo);
+    freeMemberInfo.setGroup(2);
+    freeMemberInfo[ColumnsType] = FreeMember;
+    ui->matrix->horizontalHeaderItem(3)->setData(HeaderInfo::TypeRole, freeMemberInfo);
 
     auto rowsNameGiver = new RowNameGiver();
     this->rowsNameGiver = rowsNameGiver;
@@ -95,7 +88,6 @@ MainWindow::MainWindow(QWidget *parent)
     rowsInfo[ColumnNameChanger::HeaderField] = QVariant::fromValue((AbstractNameGiverPtr) rowsNameGiver);
     rowsInfo.setDeletion(true);
     rowsInfo.setExtension(HeaderInfo::Above);
-    variableInfo[ColumnsType] = "HelperColumn";
     ui->matrix->setVerticalHeaderItem(0, new QTableWidgetItem(rowsNameGiver->getName(0)));
     ui->matrix->setVerticalHeaderItem(1, new QTableWidgetItem(rowsNameGiver->getName(1)));
     ui->matrix->verticalHeaderItem(0)->setData(HeaderInfo::TypeRole, rowsInfo);
@@ -112,7 +104,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->comboBox->insertItem(0, "→ max", FunctIntent::MAX);
     ui->comboBox->insertItem(0, "→ min", FunctIntent::MIN);
 
-    connect(ui->pushButton, &QAbstractButton::pressed, this, &MainWindow::dataEntered);
+    connect(ui->pushButton, &QAbstractButton::clicked, this, &MainWindow::dataEntered);
 }
 
 MainWindow::~MainWindow()
@@ -122,12 +114,14 @@ MainWindow::~MainWindow()
     delete rowsNameGiver;
 }
 
-MainWindow::ObjectiveFunction MainWindow::getFunctionCoeff() const {
+MainWindow::ObjectiveFunction MainWindow::function() const {
     ObjectiveFunction result;
     auto table = ui->function;
     result.coefficients.reserve(table->columnCount());
     for(int i = 0; i != table->columnCount(); ++i) {
-        QVariant variant = table->item(0, i)->data(0);
+        QVariant variant;
+        if(table->item(0, i) != nullptr)
+            variant = table->item(0, i)->data(0);
         if(variant.isValid() && variant.canConvert<double>()) {
             double value = variant.value<double>();
             result.coefficients.push_back(value);
@@ -145,7 +139,7 @@ MainWindow::ObjectiveFunction MainWindow::getFunctionCoeff() const {
     return result;
 }
 
-std::vector<MainWindow::ConstraintRow> MainWindow::getConstrains() const {
+std::vector<MainWindow::ConstraintRow> MainWindow::constrains() const {
     std::vector<ConstraintRow> result;
     auto table = ui->matrix;
     result.resize(table->rowCount());
@@ -158,8 +152,9 @@ std::vector<MainWindow::ConstraintRow> MainWindow::getConstrains() const {
                 QString type = headerData[ColumnsType].value<QString>();
                 if(type == Variable) {
                     for(int i = 0; i != table->rowCount(); ++i) {
+                        QVariant variant;
                         auto item = table->item(i, j);
-                        auto variant = item->data(0);
+                        if(item != nullptr) variant = item->data(0);
                         if(variant.isValid() && variant.canConvert<double>())
                             result[i].coefficients.push_back(variant.value<double>());
                         else
@@ -167,8 +162,9 @@ std::vector<MainWindow::ConstraintRow> MainWindow::getConstrains() const {
                     }
                 } else if(type == Relatation) {
                     for(int i = 0; i != table->rowCount(); ++i) {
+                        QVariant variant;
                         auto item = table->item(i, j);
-                        auto variant = item->data(0);
+                        if(item != nullptr) variant = item->data(Qt::UserRole);
                         if(variant.isValid() && variant.canConvert<Signs>())
                             result[i].relatationSign = variant.value<Signs>();
                         else
@@ -176,8 +172,9 @@ std::vector<MainWindow::ConstraintRow> MainWindow::getConstrains() const {
                     }
                 } else if(type == FreeMember) {
                     for(int i = 0; i != table->rowCount(); ++i) {
+                        QVariant variant;
                         auto item = table->item(i, j);
-                        auto variant = item->data(0);
+                        if(item != nullptr) variant = item->data(0);
                         if(variant.isValid() && variant.canConvert<double>())
                             result[i].freeMember = variant.value<double>();
                         else
@@ -189,3 +186,25 @@ std::vector<MainWindow::ConstraintRow> MainWindow::getConstrains() const {
     }
     return result;
 }
+
+
+//void MainWindow::setFunction(const ObjectiveFunction& funct) {
+//    if(funct.coefficients.size() != ui->function->columnCount())
+//        return; // thrown
+//    auto table = ui->function;
+//    for(int i = 0; i != table->columnCount(); ++i) {
+//        QVariant variant;
+//        if(table->item(0, i) != nullptr)
+//            variant = table->item(0, i)->data(0);
+//        if(variant.isValid() && variant.canConvert<double>()) {
+//            double value = variant.value<double>();
+//            result.coefficients.push_back(value);
+//        } else {
+//            result.coefficients.push_back(0);
+//        }
+//    }
+//}
+
+//void MainWindow::setConstrains(const std::vector<ConstraintRow> &rows) {
+
+//}

@@ -13,6 +13,7 @@ public:
     DelegateComboBox(QVariantHash hash, QObject* parent = nullptr);
 
     QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem&, const QModelIndex&) const override;
+    void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const override;
 private:
     QVariantHash hash;
 };

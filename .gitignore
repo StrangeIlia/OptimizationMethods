@@ -29,6 +29,8 @@ moc_*.*
 ui_*.h
 ui_*.cpp
 Makefile
+*.rar
+*.zip
 object_script.*
 [Bb]in
 [Dd]ebug*/

@@ -55,7 +55,7 @@ SystemOfRestrictions::SystemOfRestrictions(QWidget *parent) : QTableWidget(paren
     connect(header, SIGNAL(sectionDoubleClicked(int)), this, SLOT(removeSelectedRow(int)));
 
     delegateDouble = new DelegateDouble(Qt::AlignRight | Qt::AlignVCenter, this);
-    delegateComboBox = new DelegateComboBox(this);
+    //delegateComboBox = new DelegateComboBox(this);
 
     addVariable();
     insertColumnHeader(1, "Отношение", delegateComboBox);

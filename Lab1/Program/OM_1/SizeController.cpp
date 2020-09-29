@@ -131,6 +131,7 @@ void SizeController::addRowAndOrColumn(QTableWidgetItem *item) {
         HeaderInfo info = _trackedWidget->verticalHeaderItem(item->row())->data(HeaderInfo::TypeRole).value<QVariantMap>();
         if(info.extension() & HeaderInfo::Above){
             _trackedWidget->insertRow(item->row() + 1);
+            _trackedWidget->setVerticalHeaderItem(item->row() + 1, new QTableWidgetItem());
             _trackedWidget->verticalHeaderItem(item->row() + 1)->setData(HeaderInfo::TypeRole, info);
             emit cloneRowOrColumn(Qt::Orientation::Vertical, item->row(), item->row() + 1);
         }

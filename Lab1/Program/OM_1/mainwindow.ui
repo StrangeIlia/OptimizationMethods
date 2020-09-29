@@ -50,18 +50,7 @@
            <widget class="QTableWidget" name="function"/>
           </item>
           <item>
-           <widget class="QComboBox" name="comboBox">
-            <item>
-             <property name="text">
-              <string>→ max</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>→ min</string>
-             </property>
-            </item>
-           </widget>
+           <widget class="QComboBox" name="comboBox"/>
           </item>
          </layout>
         </widget>

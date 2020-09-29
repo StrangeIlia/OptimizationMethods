@@ -16,16 +16,16 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    Calculator.cpp \
+    BasisIterator.cpp \
     ColumnDelegateCloner.cpp \
     ColumnNameChanger.cpp \
+    DataProcessing.cpp \
     DelegateComboBox.cpp \
     DelegateController.cpp \
     DelegateDouble.cpp \
     DelegateLabel.cpp \
     HeaderInfo.cpp \
     LabelHeaderView.cpp \
-    MatrixBasisCreator.cpp \
     ResultForm.cpp \
     SizeController.cpp \
     SizeSynchronizer.cpp \
@@ -35,20 +35,22 @@ SOURCES += \
 
 HEADERS += \
     AbstractNameGiver.hpp \
-    Calculator.h \
+    BasisIterator.h \
     ColumnDelegateCloner.h \
     ColumnNameChanger.h \
+    DataProcessing.h \
     DelegateComboBox.h \
     DelegateController.h \
     DelegateDouble.h \
     DelegateLabel.h \
     HeaderInfo.h \
     LabelHeaderView.h \
-    MatrixBasisCreator.h \
+    MatrixBasisCreator.hpp \
     ResultForm.h \
     SizeController.h \
     SizeSynchronizer.h \
     SystemOfRestrictions.h \
+    VariableNameGiver.hpp \
     mainwindow.h \
     math/matrix/MatrixOnRow.hpp
 

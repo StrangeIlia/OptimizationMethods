@@ -3,17 +3,20 @@
 
 #include "mainwindow.h"
 #include "ResultForm.h"
+#include "BasisIterator.h"
+#include "VariableNameGiver.hpp"
 
-class Calculator : public QObject
+#include <QTextStream>
+
+class DataProcessing : public QObject
 {
     Q_OBJECT
 public:
-    Calculator(MainWindow *trackedWindow, ResultForm *resultForm, QObject *parent);
+    DataProcessing(MainWindow *trackedWindow, QObject *parent);
 private slots:
     void startProcessing();
 private:
    MainWindow *trackedWindow;
-   ResultForm *resultForm;
 };
 
 #endif // CALCULATOR_H
