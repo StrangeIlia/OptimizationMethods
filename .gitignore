@@ -22,6 +22,14 @@ Thumbs.db
 *.pdf
 *.doc
 *.docx
+*.o
+*.a
+**.stash
+moc_*.*
+ui_*.h
+ui_*.cpp
+Makefile
+object_script.*
 [Bb]in
 [Dd]ebug*/
 *.lib
