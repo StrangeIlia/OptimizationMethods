@@ -25,8 +25,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     QVariantHash comboBoxMap;
     comboBoxMap.insert("=", Signs::EQUAL);
-    comboBoxMap.insert("<=", Signs::LESS_OR_EQUAL);
-    comboBoxMap.insert(">=", Signs::MORE_OR_EQUAL);
+    comboBoxMap.insert("≤", Signs::LESS_OR_EQUAL);
+    comboBoxMap.insert("≥", Signs::MORE_OR_EQUAL);
     auto delegateComboBox = new DelegateComboBox(comboBoxMap, this);
 
     ui->function->setItemDelegate(delegateDouble);
@@ -43,9 +43,12 @@ MainWindow::MainWindow(QWidget *parent)
     ui->matrix->insertRow(1);
     ui->matrix->insertColumn(0);
     ui->matrix->insertColumn(0);
+    ui->matrix->insertColumn(0);
+    ui->matrix->insertColumn(0);
+    ui->function->insertColumn(0);
+    ui->function->insertColumn(0);
+
     new SizeSynchronizer(ui->matrix->model(), ui->function->model(), false, true, this);
-    ui->matrix->insertColumn(0);
-    ui->matrix->insertColumn(0);
 
     auto variableNameGiver = new VariableNameGiver();
     columnsNameGiver = variableNameGiver;

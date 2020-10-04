@@ -4,7 +4,7 @@
 #include <vector>
 #include <stdexcept>
 
-/// Qt не любит шаблоны, поэтому реализации прямо в файле с заголовками
+/// Qt не любит шаблоны, поэтому реализация прямо в файле с заголовками
 template<class _BaseType, class _IndexType = int>
 class MatrixOnRow
 {

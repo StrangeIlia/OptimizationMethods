@@ -64,7 +64,7 @@ bool BasisIterator::createFirstBasis() {
 
 void BasisIterator::errorCorrention() {
     auto matrix = _creator->trackedMatrix();
-    int rowIndex = _basis.size() - 1;
+    int rowIndex = _basis.size();
     bool isEmptyRow = true;
     int indexFreeMember = matrix->columns() - 1;
     for(int j = 0; j != indexFreeMember; ++j) {
@@ -78,7 +78,7 @@ void BasisIterator::errorCorrention() {
             throw std::exception();
         matrix->removeRows(rowIndex, rowIndex);
     }
-    std::exception();
+    return;
 }
 
 void BasisIterator::removeUnusedVariableAndRows() {

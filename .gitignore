@@ -28,6 +28,7 @@ Thumbs.db
 moc_*.*
 ui_*.h
 ui_*.cpp
+users*~*
 Makefile
 *.rar
 *.zip
