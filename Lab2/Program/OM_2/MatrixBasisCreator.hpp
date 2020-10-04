@@ -90,7 +90,7 @@ public:
     }
 
     /// Возвращает все известные базисы
-    QHash<Index, Index> getAllBasis() const {
+    const QHash<Index, Index> &getAllBasis() const {
         return basis;
     }
 };

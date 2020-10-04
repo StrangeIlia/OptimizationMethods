@@ -47,11 +47,13 @@ HEADERS += \
     LabelHeaderView.h \
     MatrixBasisCreator.hpp \
     ResultForm.h \
+    SimplexMethodIterator.h \
     SizeController.h \
     SizeSynchronizer.h \
     SystemOfRestrictions.h \
     VariableNameGiver.hpp \
     mainwindow.h \
+    math/matrix/MatrixOnRow.hpp \
     math/matrix/MatrixOnRow.hpp
 
 FORMS += \
