@@ -4,6 +4,7 @@
 #include "mainwindow.h"
 #include "ResultForm.h"
 #include "BasisIterator.h"
+#include "SimplexMethodIterator.hpp"
 #include "VariableNameGiver.hpp"
 
 #include <QTextStream>
@@ -15,6 +16,8 @@ public:
     DataProcessing(MainWindow *trackedWindow, QObject *parent);
 private slots:
     void startProcessing();
+private:
+    MatrixOnRow<double> readSimplexTable() const;
 private:
    MainWindow *trackedWindow;
 };

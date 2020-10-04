@@ -7,126 +7,148 @@ DataProcessing::DataProcessing(MainWindow *trackedWindow, QObject *parent) : QOb
 }
 
 void DataProcessing::startProcessing() {
-    /// Считываем целевую функию
-    auto funct = trackedWindow->function();
-    if(funct.intent == MainWindow::MIN) {
-        for(auto& value : funct.coefficients) {
-            value = -value;
-        }
-        funct.intent = MainWindow::MAX;
-    }
-
-    MatrixOnRow<double> mainMatrix;
-    auto rows = trackedWindow->constrains();
-    int countVariable = rows.front().coefficients.size();
-    mainMatrix.setColumns(countVariable + 1);
-    /// Считываем данные
-    for(int i = 0; i != rows.size(); ++i) {
-        const auto& row = rows[i];
-        mainMatrix.insertRows(mainMatrix.rows(), 1);
-        for(int j = 0; j != row.coefficients.size(); ++j) {
-            mainMatrix(i, j) = row.coefficients[j];
-        }
-        mainMatrix(i, mainMatrix.columns() - 1) = row.freeMember;
-    }
-    /// Добавляем вспомогательные переменные
-    for(int i = 0; i != rows.size(); ++i) {
-        const auto& row = rows[i];
-        if(row.relatationSign == MainWindow::Signs::EQUAL) continue;
-        mainMatrix.insertColumns(mainMatrix.columns() - 1, 1);
-        if(row.relatationSign == MainWindow::Signs::LESS_OR_EQUAL)
-            mainMatrix(i, mainMatrix.columns() - 2) =  1;
-        else
-            mainMatrix(i, mainMatrix.columns() - 2) = -1;
-    }
-    funct.coefficients.resize(mainMatrix.columns() - 1, 0);
-    countVariable = mainMatrix.columns() - 1;
-
+    MatrixOnRow<double> mainMatrix = readSimplexTable();
     VariableNameGiver *nameGiver = new VariableNameGiver();
-    QString resultString;
+    QString resultString = "<p>";
     QTextStream out(&resultString);
-    BasisIterator iterator(&mainMatrix);
-    /// Удаляем неиспользуемые переменные
-    auto removedVariables = iterator.removedVariables().values();
-    std::sort(removedVariables.begin(), removedVariables.end());
-    for(int i = 0; i != removedVariables.size(); ++i)
-        funct.coefficients.erase(funct.coefficients.begin() + removedVariables[i] - i);
+    SimpleMethodIterator<double> iterator(&mainMatrix);
 
-    out << tr("<p>Целевая функция: z = ");
-    out << funct.coefficients[0] << nameGiver->getName(0);
-    for(int i = 1; i != funct.coefficients.size(); ++i) {
-        auto value = funct.coefficients[i];
+    int indexFunct = mainMatrix.rows() - 1;
+    int variableCount = mainMatrix.columns() - 1;
+
+    out << tr("Целевая функция: z = ");
+
+    bool reqPlus = false;
+    for(int i = 0; i != variableCount; ++i) {
+        auto value = -mainMatrix(indexFunct, i);
         if(std::abs(value) > std::numeric_limits<double>::epsilon()) {
-            if(funct.coefficients[i] > 0) out << tr("+");
-            out << funct.coefficients[i] << nameGiver->getName(i);
+            if(reqPlus && value > 0) out << tr("+");
+            out << mainMatrix(indexFunct, i) << nameGiver->getName(i);
+            reqPlus = true;
+            out << " ";
         }
     }
 
-    QString secondString;
-    out.setString(&secondString);
+    out << tr(" → max<br><br><br>");
 
-    out << tr("→ max</p><p>");
-    out << tr("Cистема ограничений, приведенная к каноническому виду") << tr("</p><p>");
-    out.setFieldWidth(10);
-    for(int i = 0; i != mainMatrix.rows(); ++i) {
-        for(int j = 0; j != mainMatrix.columns() - 1; ++j) {
-            out << mainMatrix(i, j) << " ";
+    iterator.init();
+    int simplexTableCount = 0;
+    out.setRealNumberNotation(QTextStream::FixedNotation);
+    do {
+        ++simplexTableCount;
+        out << tr("Симлекс-таблица №") << simplexTableCount << "\n";
+        out << "<table border=\"1\" cellpadding=\"5\">";
+        out << "<tr>";
+        out << tr("<th>Базисные переменные</th><th>Свободные члены</th>");
+        for(int i = 0; i != variableCount; ++i) {
+            out << "<th>   " << nameGiver->getName(i) << "   </th>";
         }
+        out << "</tr>";
+
+        for(int i = 0; i != indexFunct; ++i) {
+            out << "<tr><td aling=\"center\">" << nameGiver->getName(iterator.creator()->getBasis(i)) << "</td>";
+            out << "<td aling=\"center\">" << mainMatrix.cell(i, variableCount) << "</td>";
+            for(int j = 0; j != variableCount; ++j) {
+                out << "<td aling=\"center\">" << mainMatrix.cell(i, j) << "</td>";
+            }
+            out << "</tr>";
+        }
+
+        out << "<tr><td aling=\"center\">z</td>";
+        out << "<td aling=\"center\">" << mainMatrix.cell(indexFunct, variableCount) << "</td>";
+        for(int j = 0; j != variableCount; ++j) {
+            out << "<td aling=\"center\">"<< mainMatrix.cell(indexFunct, j) << "</td>";
+        }
+        out << "</tr>";
+        out << "</table>";
+        out << "<br><br><br>";
         out.setFieldWidth(0);
-        out << "| ";
-        out.setFieldWidth(10);
-        out << mainMatrix(i, mainMatrix.columns() - 1);
-        out << tr("</p><p>");
-    }
-    out << tr("</p><p>");
-    out.setFieldWidth(0);
+    } while(iterator.next());
 
-    int basisCount = 0;
-    int bearingBasisCount = 0;
-    while (iterator.next()) {
-        bool bearingBasis = true;
-        for(int i = 0; i != mainMatrix.rows(); ++i) {
-            if(mainMatrix(i, mainMatrix.columns() - 1) < -std::numeric_limits<double>::epsilon()) {
-                bearingBasis = false;
-            }
-        }
-        ++basisCount;
-        out << tr("Базис №") << basisCount;
-        if(bearingBasis) {
-            ++bearingBasisCount;
-            double summ = 0;
-            for(int i = 0; i != mainMatrix.rows(); ++i) {
-                int variableNumber = iterator.creator()->getBasis(i);
-                summ += funct.coefficients[variableNumber] * mainMatrix(i, mainMatrix.columns() - 1);
-            }
-            out << tr(", являющийся опорным базисом под номером ") << bearingBasisCount;
-            out << tr("</p><p>");
-            out << tr("Значение целевой функции z = ") << summ;
-        }
-        out << tr("</p><p>");
-        out.setFieldWidth(10);
-        for(int i = 0; i != mainMatrix.rows(); ++i) {
-            for(int j = 0; j != mainMatrix.columns() - 1; ++j) {
-                out << mainMatrix(i, j) << " ";
-            }
-            out.setFieldWidth(0);
-            out << "| ";
-            out.setFieldWidth(10);
-            out << mainMatrix(i, mainMatrix.columns() - 1);
-            out << tr("</p><p>");
-        }
-        out << tr("</p><p>");
-        out.setFieldWidth(0);
-    }
-
-    out << tr("</p>");
+    out << "<br>";
 
     delete nameGiver;
 
-    secondString.replace(" ", "&#160;");
-    resultString += secondString;
+    resultString.replace("  ", " &#160;");
+    resultString += "</p>";
 
     auto resultForm = new ResultForm();
     resultForm->getText()->setHtml(resultString);
     resultForm->show();
+}
+
+MatrixOnRow<double> DataProcessing::readSimplexTable() const {
+    MatrixOnRow<double> result;
+    result.insertRows(0, 1);
+
+    /// Считываем целевую функию
+    auto funct = trackedWindow->function();
+    int countVariable = funct.coefficients.size();
+    result.insertColumns(0, countVariable + 1);
+    if(funct.intent == MainWindow::MAX) {
+        for(int j = 0; j != funct.coefficients.size(); ++j) {
+            result(0, j) = -funct.coefficients[j];
+        }
+    } else {
+        for(int j = 0; j != funct.coefficients.size(); ++j) {
+            result(0, j) = funct.coefficients[j];
+        }
+    }
+
+    /// Считываем ограничения
+    auto rows = trackedWindow->constrains();
+    int rowsCount = rows.size();
+    result.insertRows(0, rowsCount);
+    for(int i = 0; i != rowsCount; ++i) {
+        const auto& row = rows[i];
+        for(int j = 0; j != row.coefficients.size(); ++j) {
+            result(i, j) = row.coefficients[j];
+        }
+        result(i, countVariable) = row.freeMember;
+    }
+
+    /// Добавляем вспомогательные переменные
+    for(int i = 0; i != rowsCount; ++i) {
+        const auto& row = rows[i];
+        if(row.relatationSign == MainWindow::Signs::EQUAL) continue;
+        result.insertColumns(result.columns() - 1, 1);
+        if(row.relatationSign == MainWindow::Signs::LESS_OR_EQUAL)
+            result(i, result.columns() - 2) =  1;
+        else
+            result(i, result.columns() - 2) = -1;
+    }
+
+    /// Удаляем пустые строки
+    for(int i = 0; i != rowsCount; ) {
+        bool isEmptyRow = true;
+        for(int j = 0; j != countVariable; ++j) {
+            if(std::abs(result.cell(i, j)) > std::numeric_limits<double>::epsilon()) {
+                isEmptyRow = false;
+                break;
+            }
+        }
+        if(isEmptyRow) {
+            result.removeRows(i, i);
+            --rowsCount;
+        } else ++i;
+    }
+
+    /// Удаляем пустые колонки
+    for(int j = 0; j != countVariable; ) {
+        bool isEmptyColumn = true;
+        for(int i = 0; i != rowsCount; ++i) {
+            if(std::abs(result.cell(i, j)) > std::numeric_limits<double>::epsilon()) {
+                isEmptyColumn = false;
+                break;
+            }
+        }
+        if(isEmptyColumn) {
+            result.removeColumns(j, j);
+            --countVariable;
+        } else ++j;
+    }
+
+    /// Пока инициализации значения нет
+
+    return result;
 }

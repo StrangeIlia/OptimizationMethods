@@ -47,7 +47,7 @@ HEADERS += \
     LabelHeaderView.h \
     MatrixBasisCreator.hpp \
     ResultForm.h \
-    SimplexMethodIterator.h \
+    SimplexMethodIterator.hpp \
     SizeController.h \
     SizeSynchronizer.h \
     SystemOfRestrictions.h \

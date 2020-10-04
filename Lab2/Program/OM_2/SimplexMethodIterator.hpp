@@ -3,7 +3,7 @@
 
 #include <limits>
 #include <algorithm>
-#include <MatrixBasisCreator.hpp>
+#include "MatrixBasisCreator.hpp"
 
 template<class Base, class Index = int>
 class SimpleMethodIterator {
@@ -13,8 +13,14 @@ public:
     /// Итератор считает:
     /// 1) Последняя строка - это целевая функция
     /// 2) Последний столбец - свободный член
-    SimpleMethodIterator(MatrixBasisCreator<Base, Index> *creator) {
-        _creator = creator;
+    SimpleMethodIterator(MatrixOnRow<Base, Index> *matrix) {
+        _creator = new MatrixBasisCreator<Base, Index>(matrix);
+    }
+
+    bool init() {
+        if(!_creator->getAllBasis().empty())
+            return true;
+        return initBasis();
     }
 
     bool next() {
@@ -104,11 +110,11 @@ protected:
         if(lastColumn == -1) lastColumn = matrix->columns() - 1;
         auto eps = std::numeric_limits<Base>::epsilon();
         for(Index j = firstColumn; j < lastColumn; ++j) {
-            if(std::abs(_system(row, j) - 1) < eps) {
+            if(std::abs(matrix->cell(row, j) - 1) < eps) {
                 bool find = true;
                 for(Index i = 0; i < systemRows; ++i) {
-                    if(i == j) continue;
-                    if(std::abs(matrix->cell(row, j)) > eps) {
+                    if(i == row) continue;
+                    if(std::abs(matrix->cell(i, j)) > eps) {
                         find = false;
                         break;
                     }

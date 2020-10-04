@@ -14,9 +14,9 @@ ResultForm::~ResultForm()
 }
 
 QTextDocument* ResultForm::getText() const {
-    return ui->plainTextEdit->document();
+    return ui->textEdit->document();
 }
 
 void ResultForm::setText(QTextDocument* doc) {
-    ui->plainTextEdit->setDocument(doc);
+    ui->textEdit->setDocument(doc);
 }

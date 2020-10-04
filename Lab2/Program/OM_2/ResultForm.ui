@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>Вывод результатов</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -22,12 +22,9 @@
     </widget>
    </item>
    <item>
-    <widget class="QPlainTextEdit" name="plainTextEdit">
+    <widget class="QTextEdit" name="textEdit">
      <property name="readOnly">
       <bool>true</bool>
-     </property>
-     <property name="plainText">
-      <string/>
      </property>
     </widget>
    </item>
