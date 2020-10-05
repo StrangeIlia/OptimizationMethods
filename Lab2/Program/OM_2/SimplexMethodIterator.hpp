@@ -20,12 +20,23 @@ public:
     bool init() {
         if(!_creator->getAllBasis().empty())
             return true;
+        if(!checkFreeMembers())
+            return false;
         return initBasis();
     }
 
     bool next() {
         if(_creator->getAllBasis().empty() && !initBasis())
             return false;
+        return oneStep();
+    }
+
+    inline MatrixBasisCreator<Base, Index> *creator() const {
+        return _creator;
+    }
+
+protected:
+    virtual bool oneStep() {
         MatrixOnRow<Base, Index> *matrix = _creator->trackedMatrix();
 
         Index functionRow = matrix->rows() - 1;
@@ -44,11 +55,14 @@ public:
         });
 
         Index bestColumn;
+        Index freeMemberIndex = matrix->columns() - 1;
         std::vector<Index> rowCandidats;
         rowCandidats.reserve(matrix->rows());
         for(Index column : columnCandidats) {
             for(Index i = 0; i != functionRow; ++i) {
-                if(matrix->cell(i, column) > 0) {
+                auto cellValue = matrix->cell(i, column);
+                auto freeMember = matrix->cell(i, freeMemberIndex);
+                if(cellValue > 0 && freeMember > 0) {
                     rowCandidats.push_back(i);
                 }
             }
@@ -58,11 +72,10 @@ public:
             }
         }
 
-        if(rowCandidats.empty())
-            throw std::exception();
+        if(rowCandidats.empty()) return false;
 
         Index bestRow;
-        Index freeMemberIndex = matrix->columns() - 1;
+
         Base bestValue = std::numeric_limits<Base>::max();
         for(const Index &row : rowCandidats) {
             Base value = matrix->cell(row, freeMemberIndex) / matrix->cell(row, bestColumn);
@@ -76,14 +89,21 @@ public:
         return true;
     }
 
-    inline MatrixBasisCreator<Base, Index> *creator() const {
-        return _creator;
+    /// Проверка свободных коэффициентов
+    bool checkFreeMembers() {
+        auto *matrix = _creator->trackedMatrix();
+        Index indexFreeMember = matrix->columns() - 1;
+        for(Index i = 0; i != matrix->rows(); ++i) {
+            if(matrix->cell(i, indexFreeMember) < 0)
+                return false;
+        }
+        return true;
     }
 
-protected:
     /// Инициализация метода
     virtual bool initBasis() {
         auto *matrix = _creator->trackedMatrix();
+        /// Проверка свободных коэффициентов
         Index systemRows = matrix->rows() - 1;
         for(Index i = 0; i != systemRows; ++i) {
             Index result = findBasis(i);
