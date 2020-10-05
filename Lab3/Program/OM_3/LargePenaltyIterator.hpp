@@ -6,7 +6,7 @@
 template<class Base, class Index = int>
 class LargePenaltyIterator : public SimpleMethodIterator<Base, Index> {
 protected:
-    Index _countAdditionBasis;
+    Index _countAdditionBasis = 0;
 
 public:
     /// Итератор считает:
@@ -46,7 +46,7 @@ protected:
             /// Упорядочиваем
             if(matrix->cell(i, indexFreeMember) < 0) {
                 for(Index j = 0; j != matrix->columns(); ++j) {
-                    matrix->cell(i, j) = -matrix->cell(i, j);
+                    matrix->setCell(i, j, -matrix->cell(i, j));
                 }
             }
         }
@@ -59,9 +59,9 @@ protected:
         Index systemRows = matrix->rows() - 1;
         for(Index i = 0; i != systemRows; ++i) {
             if(creator->getBasis(i) != -1) continue;
-            Index result = findBasis(i);
+            Index result = this->findBasis(i);
             if(result != -1)
-                this->_creator->createBasis(i, result);
+                creator->createBasis(i, result);
             else {
                 fullInit = false;
             }
@@ -79,8 +79,8 @@ protected:
         /// Добавляем вспомогательные переменные
         for(Index i = 0; i != systemRows; ++i) {
             if(creator->getBasis(i) == -1) {
-                matrix->insertColumn(indexFreeMember, 1);
-                matrix->cell(i, indexFreeMember) = 1;
+                matrix->insertColumns(indexFreeMember, 1);
+                matrix->setCell(i, indexFreeMember, 1);
                 ++indexFreeMember;
                 ++_countAdditionBasis;
             }
@@ -106,15 +106,44 @@ protected:
         Index start = firstAuxiliaryColumns();
         Index end = start + _countAdditionBasis;
         for(Index i = start; i != end; ++i) {
-            matrix->cell(systemRows, i) = maxValue;
+            matrix->setCell(systemRows, i, maxValue);
         }
     }
 
+    bool removeAdditionBasis() {
+        auto *creator = this->_creator;
+        auto *matrix = creator->trackedMatrix();
+        Index systemRows = matrix->rows() - 1;
+        Index freeMember = matrix->columns() - 1;
+        Index first = firstAuxiliaryColumns();
+        Index last = first + _countAdditionBasis;
+        for(Index i = first; i != last; ++i) {
+            Index oldBasis = creator->getBasis(i);
+            if(oldBasis >= first) {
+                if(std::abs(matrix->cell(i, freeMember)) > std::numeric_limits<Base>::epsilon()) {
+                    return false;
+                }
+                creator->deleteBasis(i);
+                bool okey = false;
+                for(Index j = 0; !okey && j != first; ++j) {
+                    okey = creator->createBasis(j);
+                }
+                if(!okey) {
+                    okey = creator->createBasis(i, oldBasis);
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     void removeAdditionVariable() {
-        auto *matrix = this->_creator->trackedMatrix();
-        /// Удаляем вспомогательные столбцы
+        auto *creator = this->_creator;
+        auto *matrix = creator->trackedMatrix();
+        Index systemRows = matrix->rows() - 1;
         Index first = firstAuxiliaryColumns();
         Index last = first + _countAdditionBasis - 1;
+        /// Удаляем вспомогательные столбцы
         matrix->removeColumns(first, last);
         _countAdditionBasis = 0;
     }
@@ -127,6 +156,8 @@ protected:
         bool result = this->SimpleMethodIterator<Base, Index>::oneStep();
         if(!result) {
             if(_countAdditionBasis == 0)
+                return false;
+            if(!removeAdditionBasis())
                 return false;
             removeAdditionVariable();
             returnFunction();

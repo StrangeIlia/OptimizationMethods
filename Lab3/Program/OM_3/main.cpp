@@ -5,8 +5,6 @@
 #include "math/matrix/MatrixOnRow.hpp"
 #include "DataProcessing.h"
 
-#include "SystemOfRestrictions.h"
-
 /// Просьба, не удалять первый столбец
 /// (Qt почему - то не отлавливает сигнал именно для него)
 

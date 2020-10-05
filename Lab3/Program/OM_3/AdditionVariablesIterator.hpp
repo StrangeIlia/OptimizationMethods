@@ -21,27 +21,28 @@ protected:
         auto *creator = this->_creator;
         auto *matrix = creator->trackedMatrix();
         Index systemRows = matrix->rows() - 1;
-        Index indexAuxiliaryVariable = matrix->columns() - 1 - this->_countAdditionBasis;
+        Index indexAuxiliaryVariable = this->firstAuxiliaryColumns();
         _baseFunction.resize(indexAuxiliaryVariable);
         /// Копируем исходную функцию и зануляем коэффициенты при ней
         for(Index j = 0; j != indexAuxiliaryVariable; ++j) {
             _baseFunction[j] = matrix->cell(systemRows, j);
-            matrix->cell(systemRows, j) = 0;
+            matrix->setCell(systemRows, j, 0);
         }
         /// Добавляем инициализируем новую функцию
-        Index start = this->firstAuxiliaryColumns();
+        Index start = indexAuxiliaryVariable;
         Index end = start + this->_countAdditionBasis;
         for(Index i = start; i != end; ++i) {
-            matrix->cell(systemRows, i) = 1;
+            matrix->setCell(systemRows, i, 1);
         }
     }
 
     void returnFunction() override {
         if(_baseFunction.empty()) return;
+        auto *creator = this->_creator;
         auto *matrix = this->_creator->trackedMatrix();
         Index systemRows = matrix->rows() - 1;
         for(int j = 0; j != _baseFunction.size(); ++j) {
-            matrix->cell(systemRows, j) = _baseFunction[j];
+            matrix->setCell(systemRows, j, _baseFunction[j]);
         }
     }
 };

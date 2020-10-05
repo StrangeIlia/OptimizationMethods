@@ -8,13 +8,30 @@ DataProcessing::DataProcessing(MainWindow *trackedWindow, QObject *parent) : QOb
 
 void DataProcessing::startProcessing() {
     MatrixOnRow<double> mainMatrix = readSimplexTable();
-    VariableNameGiver *nameGiver = new VariableNameGiver();
+    VariableNameGiver *baseVariable = new VariableNameGiver();
+    VariableNameGiver *additionVariable = new VariableNameGiver("y");
     QString resultString = "<p>";
     QTextStream out(&resultString);
-    SimpleMethodIterator<double> iterator(&mainMatrix);
+
+    SimpleMethodIterator<double> *iterator = nullptr;
+
+    if(trackedWindow->method() == MainWindow::LargePenalty) {
+        iterator = new LargePenaltyIterator<double>(&mainMatrix);
+    } else if(trackedWindow->method() == MainWindow::AdditionVariable) {
+        iterator = new AdditionVariablesIterator<double>(&mainMatrix);
+    } else {
+        iterator = new SimpleMethodIterator<double>(&mainMatrix);
+    }
 
     int indexFunct = mainMatrix.rows() - 1;
     int variableCount = mainMatrix.columns() - 1;
+
+    auto getName = [baseVariable, additionVariable, variableCount] (int index) {
+        if(index < variableCount)
+            return baseVariable->getName(index);
+        else
+           return additionVariable->getName(index - variableCount);
+    };
 
     out << tr("Целевая функция: z = ");
 
@@ -24,34 +41,37 @@ void DataProcessing::startProcessing() {
         if(std::abs(value) > std::numeric_limits<double>::epsilon()) {
             if(reqPlus && value > 0) out << tr("+ ");
             if(std::abs(value - 1) < std::numeric_limits<double>::epsilon())
-                out << nameGiver->getName(i);
+                out << baseVariable->getName(i);
             else if(std::abs(value + 1) < std::numeric_limits<double>::epsilon())
-                out << "-" << nameGiver->getName(i);
+                out << "-" << baseVariable->getName(i);
             else
-                out << value << nameGiver->getName(i);
+                out << value << baseVariable->getName(i);
             reqPlus = true;
             out << " ";
         }
     }
 
-    out << tr(" → max<br><br><br>");
+    out << tr(" → max");
 
-    iterator.init();
+    iterator->init();
+    /// Обновляем, поскольку число переменных может измениться
+    variableCount = mainMatrix.columns() - 1;
+
     int simplexTableCount = 0;
     out.setRealNumberNotation(QTextStream::FixedNotation);
     do {
         ++simplexTableCount;
-        out << tr("Симлекс-таблица №") << simplexTableCount << "\n";
+        out << tr("<br><br><br>Симлекс-таблица №") << simplexTableCount << "\n";
         out << "<table border=\"1\" cellpadding=\"5\">";
         out << "<tr>";
         out << tr("<th>Базисные переменные</th><th>Свободные коэффициенты</th>");
         for(int i = 0; i != variableCount; ++i) {
-            out << "<th>   " << nameGiver->getName(i) << "   </th>";
+            out << "<th>   " << getName(i) << "   </th>";
         }
         out << "</tr>";
 
         for(int i = 0; i != indexFunct; ++i) {
-            out << "<tr><td aling=\"center\">" << nameGiver->getName(iterator.creator()->getBasis(i)) << "</td>";
+            out << "<tr><td aling=\"center\">" << getName(iterator->creator()->getBasis(i)) << "</td>";
             out << "<td aling=\"center\">" << mainMatrix.cell(i, variableCount) << "</td>";
             for(int j = 0; j != variableCount; ++j) {
                 out << "<td aling=\"center\">" << mainMatrix.cell(i, j) << "</td>";
@@ -66,13 +86,12 @@ void DataProcessing::startProcessing() {
         }
         out << "</tr>";
         out << "</table>";
-        out << "<br><br><br>";
         out.setFieldWidth(0);
-    } while(iterator.next());
+    } while(iterator->next());
 
-    out << "<br>";
-
-    delete nameGiver;
+    delete iterator;
+    delete baseVariable;
+    delete additionVariable;
 
     resultString.replace("  ", " &#160;");
     resultString += "</p>";

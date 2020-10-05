@@ -17,6 +17,10 @@ public:
         _creator = new MatrixBasisCreator<Base, Index>(matrix);
     }
 
+    virtual ~SimpleMethodIterator() {
+        delete _creator;
+    }
+
     virtual bool init() {
         if(!_creator->getAllBasis().empty())
             return true;
@@ -39,9 +43,10 @@ protected:
         MatrixOnRow<Base, Index> *matrix = _creator->trackedMatrix();
 
         Index functionRow = matrix->rows() - 1;
+        Index freeMemberIndex = matrix->columns() - 1;
         std::vector<Index> columnCandidats;
         columnCandidats.reserve(matrix->columns());
-        for(Index j = 0; j != matrix->columns(); ++j) {
+        for(Index j = 0; j != freeMemberIndex; ++j) {
             if(matrix->cell(functionRow, j) < 0)
                 columnCandidats.push_back(j);
         }
@@ -54,7 +59,6 @@ protected:
         });
 
         Index bestColumn;
-        Index freeMemberIndex = matrix->columns() - 1;
         std::vector<Index> rowCandidats;
         rowCandidats.reserve(matrix->rows());
         for(Index column : columnCandidats) {

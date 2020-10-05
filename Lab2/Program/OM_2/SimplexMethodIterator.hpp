@@ -40,9 +40,10 @@ protected:
         MatrixOnRow<Base, Index> *matrix = _creator->trackedMatrix();
 
         Index functionRow = matrix->rows() - 1;
+        Index freeMemberIndex = matrix->columns() - 1;
         std::vector<Index> columnCandidats;
         columnCandidats.reserve(matrix->columns());
-        for(Index j = 0; j != matrix->columns(); ++j) {
+        for(Index j = 0; j != freeMemberIndex; ++j) {
             if(matrix->cell(functionRow, j) < 0)
                 columnCandidats.push_back(j);
         }
@@ -55,7 +56,6 @@ protected:
         });
 
         Index bestColumn;
-        Index freeMemberIndex = matrix->columns() - 1;
         std::vector<Index> rowCandidats;
         rowCandidats.reserve(matrix->rows());
         for(Index column : columnCandidats) {

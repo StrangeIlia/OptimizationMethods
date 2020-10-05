@@ -108,6 +108,9 @@ MainWindow::MainWindow(QWidget *parent)
     ui->comboBox->insertItem(0, "→ min", FunctIntent::MIN);
 
     connect(ui->pushButton, &QAbstractButton::clicked, this, &MainWindow::dataEntered);
+
+    ui->method->addItem("Метод искусственного базиса", AdditionVariable);
+    ui->method->addItem("Метод больших штрафов", LargePenalty);
 }
 
 MainWindow::~MainWindow()
@@ -115,6 +118,10 @@ MainWindow::~MainWindow()
     delete ui;
     delete columnsNameGiver;
     delete rowsNameGiver;
+}
+
+MainWindow::Method MainWindow::method() const {
+    return ui->method->currentData().value<Method>();
 }
 
 MainWindow::ObjectiveFunction MainWindow::function() const {
@@ -189,25 +196,3 @@ std::vector<MainWindow::ConstraintRow> MainWindow::constrains() const {
     }
     return result;
 }
-
-
-//void MainWindow::setFunction(const ObjectiveFunction& funct) {
-//    if(funct.coefficients.size() != ui->function->columnCount())
-//        return; // thrown
-//    auto table = ui->function;
-//    for(int i = 0; i != table->columnCount(); ++i) {
-//        QVariant variant;
-//        if(table->item(0, i) != nullptr)
-//            variant = table->item(0, i)->data(0);
-//        if(variant.isValid() && variant.canConvert<double>()) {
-//            double value = variant.value<double>();
-//            result.coefficients.push_back(value);
-//        } else {
-//            result.coefficients.push_back(0);
-//        }
-//    }
-//}
-
-//void MainWindow::setConstrains(const std::vector<ConstraintRow> &rows) {
-
-//}

@@ -3,9 +3,8 @@
 
 #include "mainwindow.h"
 #include "ResultForm.h"
-#include "BasisIterator.h"
-#include "SimplexMethodIterator.hpp"
 #include "VariableNameGiver.hpp"
+#include "AdditionVariablesIterator.hpp"
 
 #include <QTextStream>
 

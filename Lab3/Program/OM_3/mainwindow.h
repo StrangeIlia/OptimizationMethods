@@ -37,6 +37,12 @@ public:
         MAX
     };
 
+    enum Method {
+        SimplexMethod,
+        AdditionVariable,
+        LargePenalty
+    };
+
     struct ConstraintRow{
         std::vector<double> coefficients;
         double freeMember;
@@ -52,6 +58,7 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+    Method method() const;
     ObjectiveFunction function() const;
     std::vector<ConstraintRow> constrains() const;
 
@@ -72,6 +79,7 @@ private:
 };
 
 Q_DECLARE_METATYPE(MainWindow::Signs);
+Q_DECLARE_METATYPE(MainWindow::Method);
 Q_DECLARE_METATYPE(MainWindow::FunctIntent);
 
 #endif // MAINWINDOW_H
