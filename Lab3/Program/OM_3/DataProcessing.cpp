@@ -39,7 +39,13 @@ void DataProcessing::startProcessing() {
     for(int i = 0; i != variableCount; ++i) {
         auto value = -mainMatrix(indexFunct, i);
         if(std::abs(value) > std::numeric_limits<double>::epsilon()) {
-            if(reqPlus && value > 0) out << tr("+ ");
+            if(reqPlus) {
+                if(value > 0) out << tr("+ ");
+                else {
+                    value = -value;
+                    out << tr("- ");
+                }
+            }
             if(std::abs(value - 1) < std::numeric_limits<double>::epsilon())
                 out << baseVariable->getName(i);
             else if(std::abs(value + 1) < std::numeric_limits<double>::epsilon())
@@ -54,13 +60,13 @@ void DataProcessing::startProcessing() {
     out << tr(" → max");
 
     iterator->init();
-    /// Обновляем, поскольку число переменных может измениться
-    variableCount = mainMatrix.columns() - 1;
 
     int simplexTableCount = 0;
     out.setRealNumberNotation(QTextStream::FixedNotation);
     do {
         ++simplexTableCount;
+        /// Обновляем, поскольку число переменных может измениться
+        variableCount = mainMatrix.columns() - 1;
         out << tr("<br><br><br>Симлекс-таблица №") << simplexTableCount << "\n";
         out << "<table border=\"1\" cellpadding=\"5\">";
         out << "<tr>";

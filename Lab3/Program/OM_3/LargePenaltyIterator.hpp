@@ -110,6 +110,21 @@ protected:
         }
     }
 
+    bool reqRemoveAdditionVariable() {
+        if(_countAdditionBasis == 0) return false;
+        auto *creator = this->_creator;
+        auto *matrix = creator->trackedMatrix();
+        Index systemRows = matrix->rows() - 1;
+        Index freeMember = matrix->columns() - 1;
+        Index first = firstAuxiliaryColumns();
+        Index last = first + _countAdditionBasis;
+        for(Index i = 0; i != systemRows; ++i) {
+            if(creator->getBasis(i) >= first)
+                return false;
+        }
+        return true;
+    }
+
     bool removeAdditionBasis() {
         auto *creator = this->_creator;
         auto *matrix = creator->trackedMatrix();
@@ -153,6 +168,11 @@ protected:
     }
 
     bool oneStep() override {
+        if(reqRemoveAdditionVariable()) {
+            removeAdditionVariable();
+            returnFunction();
+            return true;
+        }
         bool result = this->SimpleMethodIterator<Base, Index>::oneStep();
         if(!result) {
             if(_countAdditionBasis == 0)

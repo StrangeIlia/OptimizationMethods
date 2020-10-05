@@ -36,6 +36,18 @@ protected:
         }
     }
 
+    void updateBasis() {
+        auto *creator = this->_creator;
+        auto *matrix = creator->trackedMatrix();
+        Index systemRows = matrix->rows() - 1;
+        for(Index i = 0; i != systemRows; ++i) {
+            Index column = creator->getBasis(i);
+            creator->deleteBasis(i);
+            creator->createBasis(i, column);
+        }
+    }
+
+
     void returnFunction() override {
         if(_baseFunction.empty()) return;
         auto *creator = this->_creator;
@@ -44,6 +56,8 @@ protected:
         for(int j = 0; j != _baseFunction.size(); ++j) {
             matrix->setCell(systemRows, j, _baseFunction[j]);
         }
+
+        updateBasis();
     }
 };
 
