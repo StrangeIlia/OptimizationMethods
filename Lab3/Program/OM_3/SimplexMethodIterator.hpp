@@ -25,9 +25,8 @@ public:
         return initBasis();
     }
 
-    virtual bool next() {
-        if(_creator->getAllBasis().empty() && !initBasis())
-            return false;
+    bool next() {
+        init();
         return oneStep();
     }
 
@@ -36,7 +35,7 @@ public:
     }
 
 protected:
-    bool oneStep() {
+    virtual bool oneStep() {
         MatrixOnRow<Base, Index> *matrix = _creator->trackedMatrix();
 
         Index functionRow = matrix->rows() - 1;
@@ -108,7 +107,6 @@ protected:
         for(Index i = 0; i != systemRows; ++i) {
             Index result = findBasis(i);
             if(result == -1) {
-                clearAllBasis();
                 return false;
             }
             _creator->createBasis(i, result);
@@ -117,6 +115,7 @@ protected:
     }
 
     void clearAllBasis() {
+        if(_creator->getAllBasis().empty()) return;
         auto *matrix = _creator->trackedMatrix();
         Index systemRows = matrix->rows() - 1;
         for(Index i = 0; i != systemRows; ++i)

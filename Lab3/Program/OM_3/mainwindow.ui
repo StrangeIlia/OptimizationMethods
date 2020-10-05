@@ -100,6 +100,9 @@
            </spacer>
           </item>
           <item>
+           <widget class="QComboBox" name="method"/>
+          </item>
+          <item>
            <widget class="QPushButton" name="pushButton">
             <property name="text">
              <string>Произвести расчеты</string>

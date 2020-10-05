@@ -33,6 +33,7 @@ SOURCES += \
 
 HEADERS += \
     AbstractNameGiver.hpp \
+    AdditionVariablesIterator.hpp \
     BasisIterator.h \
     ColumnDelegateCloner.h \
     ColumnNameChanger.h \
@@ -42,6 +43,7 @@ HEADERS += \
     DelegateDouble.h \
     HeaderInfo.h \
     LabelHeaderView.h \
+    LargePenaltyIterator.hpp \
     MatrixBasisCreator.hpp \
     ResultForm.h \
     SimplexMethodIterator.hpp \
