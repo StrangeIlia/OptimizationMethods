@@ -54,9 +54,11 @@ protected:
 
     bool initBasis() {
         bool fullInit = true;
-        auto *matrix = this->_creator->trackedMatrix();
+        auto *creator = this->_creator;
+        auto *matrix = creator->trackedMatrix();
         Index systemRows = matrix->rows() - 1;
         for(Index i = 0; i != systemRows; ++i) {
+            if(creator->getBasis(i) != -1) continue;
             Index result = findBasis(i);
             if(result != -1)
                 this->_creator->createBasis(i, result);
@@ -104,7 +106,7 @@ protected:
         Index start = firstAuxiliaryColumns();
         Index end = start + _countAdditionBasis;
         for(Index i = start; i != end; ++i) {
-            matrix->cell(systemRows, i) = 1;
+            matrix->cell(systemRows, i) = maxValue;
         }
     }
 
