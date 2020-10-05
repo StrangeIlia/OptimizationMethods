@@ -11,7 +11,7 @@ ColumnNameChanger::ColumnNameChanger(QAbstractItemModel *model, QObject *parent)
 }
 
 void ColumnNameChanger::nameChange(Qt::Orientation orientation, int first, int last) {
-    if(orientation == Qt::Orientation::Vertical) return;
+    //if(orientation == Qt::Orientation::Vertical) return;
     QMap<AbstractNameGiverPtr, int> groupAndIndex;
     for(int i = first; i <= last; ++i) {
         QVariant variant = trackedModel->headerData(i, orientation, HeaderInfo::TypeRole);
