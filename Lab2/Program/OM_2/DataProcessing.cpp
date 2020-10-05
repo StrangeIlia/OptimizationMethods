@@ -22,8 +22,13 @@ void DataProcessing::startProcessing() {
     for(int i = 0; i != variableCount; ++i) {
         auto value = -mainMatrix(indexFunct, i);
         if(std::abs(value) > std::numeric_limits<double>::epsilon()) {
-            if(reqPlus && value > 0) out << tr("+");
-            out << mainMatrix(indexFunct, i) << nameGiver->getName(i);
+            if(reqPlus && value > 0) out << tr("+ ");
+            if(std::abs(value - 1) < std::numeric_limits<double>::epsilon())
+                out << nameGiver->getName(i);
+            else if(std::abs(value + 1) < std::numeric_limits<double>::epsilon())
+                out << "-" << nameGiver->getName(i);
+            else
+                out << value << nameGiver->getName(i);
             reqPlus = true;
             out << " ";
         }
@@ -39,7 +44,7 @@ void DataProcessing::startProcessing() {
         out << tr("Симлекс-таблица №") << simplexTableCount << "\n";
         out << "<table border=\"1\" cellpadding=\"5\">";
         out << "<tr>";
-        out << tr("<th>Базисные переменные</th><th>Свободные члены</th>");
+        out << tr("<th>Базисные переменные</th><th>Свободные коэффициенты</th>");
         for(int i = 0; i != variableCount; ++i) {
             out << "<th>   " << nameGiver->getName(i) << "   </th>";
         }

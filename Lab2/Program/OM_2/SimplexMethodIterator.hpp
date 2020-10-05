@@ -17,7 +17,7 @@ public:
         _creator = new MatrixBasisCreator<Base, Index>(matrix);
     }
 
-    bool init() {
+    virtual bool init() {
         if(!_creator->getAllBasis().empty())
             return true;
         if(!checkFreeMembers())
@@ -25,7 +25,7 @@ public:
         return initBasis();
     }
 
-    bool next() {
+    virtual bool next() {
         if(_creator->getAllBasis().empty() && !initBasis())
             return false;
         return oneStep();
@@ -36,7 +36,7 @@ public:
     }
 
 protected:
-    virtual bool oneStep() {
+    bool oneStep() {
         MatrixOnRow<Base, Index> *matrix = _creator->trackedMatrix();
 
         Index functionRow = matrix->rows() - 1;
@@ -101,7 +101,7 @@ protected:
     }
 
     /// Инициализация метода
-    virtual bool initBasis() {
+    bool initBasis() {
         auto *matrix = _creator->trackedMatrix();
         /// Проверка свободных коэффициентов
         Index systemRows = matrix->rows() - 1;
