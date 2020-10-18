@@ -242,6 +242,26 @@
         </spacer>
        </item>
        <item>
+        <widget class="QComboBox" name="comboBox">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <item>
+          <property name="text">
+           <string>Распределительный метод</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Метод потенциалов</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item>
         <widget class="QPushButton" name="pushButton_2">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Maximum" vsizetype="Fixed">

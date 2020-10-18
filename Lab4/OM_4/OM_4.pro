@@ -17,14 +17,27 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     console.cpp \
+    data_processing.cpp \
     delegate_double.cpp \
+    distribution_method.cpp \
+    enumerator.cpp \
+    least_cost_method.cpp \
     main.cpp \
-    main_window.cpp
+    main_data_struct.cpp \
+    main_window.cpp \
+    nortwest_corner_method.cpp
 
 HEADERS += \
     console.h \
+    data_processing.h \
     delegate_double.h \
-    main_window.h
+    distribution_method.h \
+    enumerator.h \
+    least_cost_method.h \
+    main_data_struct.h \
+    main_window.h \
+    math/matrix/MatrixOnRow.hpp \
+    nortwest_corner_method.h
 
 FORMS += \
     console.ui \
