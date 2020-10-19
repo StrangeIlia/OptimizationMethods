@@ -5,27 +5,33 @@ NortwestCornerMethod::NortwestCornerMethod(MatrixPtr suppliers, MatrixPtr comsum
     _comsumers = comsumers;
 }
 
-void NortwestCornerMethod::processing(MainDataStructPtr data) {
+void NortwestCornerMethod::init(MainDataStructPtr data) {
     data->clear();
 
-    Matrix suppliers = *_suppliers;
-    Matrix comsumers = *_comsumers;
+    _currentSuppliers = *_suppliers;
+    _currentComsumers = *_comsumers;
 
-    suppliers.setSize(1, suppliers.rows() * suppliers.columns());
-    comsumers.setSize(1, comsumers.rows() * comsumers.columns());
+    _currentSuppliers.setSize(1, _currentSuppliers.rows() * _currentSuppliers.columns());
+    _currentComsumers.setSize(1, _currentComsumers.rows() * _currentComsumers.columns());
 
-    int i = 0; int j = 0;
+    i = 0; j = 0;
+}
 
-    while(i != suppliers.rows() && j != comsumers.columns()) {
-        data->insertIndex(0, 0);
-        if(suppliers(0, i) < comsumers(0, j)) {
-            comsumers(0, j) -= suppliers(0, i);
-            suppliers(0, i) = 0;
-            ++i;
-        } else {
-            suppliers(0, i) -= comsumers(0, j);
-            comsumers(0, j) = 0;
-            ++j;
-        }
+bool NortwestCornerMethod::oneStep(MainDataStructPtr data) {
+    if(i == _currentSuppliers.rows() || j == _currentComsumers.columns())
+        return false;
+
+    if(_currentSuppliers(0, i) < _currentComsumers(0, j)) {
+        _currentComsumers(0, j) -= _currentSuppliers(0, i);
+        data->insertIndex(i, j, _currentSuppliers(0, i));
+        _currentSuppliers(0, i) = 0;
+        ++i;
+    } else {
+        _currentSuppliers(0, i) -= _currentComsumers(0, j);
+        data->insertIndex(i, j, _currentComsumers(0, j));
+        _currentComsumers(0, j) = 0;
+        ++j;
     }
+
+    return true;
 }

@@ -25,7 +25,9 @@ SOURCES += \
     main.cpp \
     main_data_struct.cpp \
     main_window.cpp \
-    nortwest_corner_method.cpp
+    math/matrix/matrix_operations.cpp \
+    nortwest_corner_method.cpp \
+    potential_method.cpp
 
 HEADERS += \
     console.h \
@@ -37,7 +39,9 @@ HEADERS += \
     main_data_struct.h \
     main_window.h \
     math/matrix/MatrixOnRow.hpp \
-    nortwest_corner_method.h
+    math/matrix/matrix_operations.h \
+    nortwest_corner_method.h \
+    potential_method.h
 
 FORMS += \
     console.ui \

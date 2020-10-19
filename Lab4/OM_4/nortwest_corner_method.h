@@ -6,13 +6,19 @@
 class NortwestCornerMethod : public DataProcessing
 {
 public:
-    NortwestCornerMethod(MatrixPtr suppliers, MatrixPtr comsumers);
+    NortwestCornerMethod(MatrixPtr _currentSuppliers, MatrixPtr _currentComsumers);
 
-    void processing(MainDataStructPtr data) override;
+    void init(MainDataStructPtr data) override;
+    bool oneStep(MainDataStructPtr data) override;
 
 private:
     MatrixPtr _suppliers;
     MatrixPtr _comsumers;
+
+    Matrix _currentSuppliers;
+    Matrix _currentComsumers;
+
+    int i, j;
 };
 
 #endif // NORTWESTCORNERMETHOD_H

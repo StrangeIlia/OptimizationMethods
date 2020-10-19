@@ -7,6 +7,7 @@
 
 struct VariantIndex {
     int row, column;
+    double count;
 };
 
 class MainDataStruct;
@@ -19,21 +20,16 @@ class MainDataStruct
 public:
     MainDataStruct();
 
-    typedef QMap<int, VariantIndexPtr>  SortedData;
-    typedef QPair<SortedData::const_iterator, SortedData::const_iterator>
-                                        Range;
+    typedef QHash<int, VariantIndexPtr>  RowsColumns;
 
-    SortedData rows(int column) const;
-    SortedData columns(int row) const;
+    RowsColumns rows(int column) const;
+    RowsColumns columns(int row) const;
 
-    Range upper(int row, int column) const;
-    Range lower(int row, int column) const;
-
-    Range left(int row, int column) const;
-    Range right(int row, int column) const;
-
-    void insertIndex(int row, int column);
+    void insertIndex(int row, int column, double count);
     void removeIndex(int row, int column);
+
+    void insertIndex(VariantIndexPtr ptr);
+    void removeIndex(VariantIndexPtr ptr);
 
     VariantIndexPtr index(int row, int column) const;
 
@@ -44,8 +40,8 @@ public:
     void clear();
 
 private:
-    QHash<int, SortedData> rowsData;
-    QHash<int, SortedData> columnsData;
+    QHash<int, RowsColumns> rowsData;
+    QHash<int, RowsColumns> columnsData;
 };
 
 

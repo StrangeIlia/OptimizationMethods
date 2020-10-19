@@ -1,27 +1,25 @@
 #include "distribution_method.h"
 
-DistributionMethod::DistributionMethod(MatrixPtr suppliers, MatrixPtr comsumers, MatrixPtr costs)  {
-    _suppliers = suppliers;
-    _comsumers = comsumers;
+DistributionMethod::DistributionMethod(MatrixPtr costs)  {
     _costs = costs;
 }
 
-void DistributionMethod::processing(MainDataStructPtr data) {
-    Matrix suppliers = *_suppliers;
-    Matrix comsumers = *_comsumers;
-
-    suppliers.setSize(1, suppliers.rows() * suppliers.columns());
-    comsumers.setSize(1, comsumers.rows() * comsumers.columns());
-
-    bool reqieredContinue = true;
-    while(reqieredContinue) {
-        reqieredContinue = false;
-        for(int i = 0; i != suppliers.columns(); ++i) {
-            for(int j = 0; j != comsumers.columns(); ++j) {
-                if()
+bool DistributionMethod::oneStep(MainDataStructPtr data) {
+    for(int i = 0; i != _costs->columns(); ++i) {
+        for(int j = 0; j != _costs->columns(); ++j) {
+            if(!data->hasIndex(i, j)) {
+                auto cycle = createCycle(i, j, data);
+                if(cycleCost(cycle) < 0) {
+                    auto removedIndex = updateCycle(cycle);
+                    data->removeIndex(removedIndex);
+                    auto additionIndex = cycle.front();
+                    data->insertIndex(additionIndex);
+                    return true;
+                }
             }
         }
     }
+    return false;
 }
 
 QList<VariantIndexPtr> DistributionMethod::createCycle(int row, int column, MainDataStructPtr data) {
@@ -63,7 +61,7 @@ QList<VariantIndexPtr> DistributionMethod::createCycle(int row, int column, Main
 
     Processor processor;
     processor.data = data;
-    processor.list.push_front(VariantIndexPtr(new VariantIndex{row, column}));
+    processor.list.push_front(VariantIndexPtr(new VariantIndex{row, column, 0}));
 
     if(processor.topDown())     return processor.list;
     if(processor.leftRight())   return processor.list;
@@ -72,8 +70,30 @@ QList<VariantIndexPtr> DistributionMethod::createCycle(int row, int column, Main
 
 double DistributionMethod::cycleCost(QList<VariantIndexPtr> cycle) const {
     double cost = 0;
-    for(auto ptr : cycle) {
-        cost += _costs->cell(ptr->row, ptr->column);
+    for(int i = 0; i != cycle.size(); ++i) {
+        auto ptr = cycle[i];
+        auto value = _costs->cell(ptr->row, ptr->column);
+        if(i % 2 == 0)  cost += value;
+        else            cost -= value;
     }
     return cost;
+}
+
+VariantIndexPtr DistributionMethod::updateCycle(QList<VariantIndexPtr> cycle) {
+    VariantIndexPtr index;
+    double minValue = std::numeric_limits<double>::max();
+    for(auto ptr : cycle) {
+        if(ptr->count < minValue) {
+            index = ptr;
+            minValue = ptr->count;
+        }
+    }
+
+    for(int i = 0; i != cycle.size(); ++i) {
+        auto ptr = cycle[i];
+        if(i % 2 == 0)  ptr->count += minValue;
+        else            ptr->count -= minValue;
+    }
+
+    return index;
 }

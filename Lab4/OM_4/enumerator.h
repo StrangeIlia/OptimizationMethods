@@ -8,7 +8,7 @@ class Enumerator
 public:
     Enumerator();
 
-    virtual void reset() = 0;
+    virtual bool reset();
     virtual bool moveNext() = 0;
 };
 

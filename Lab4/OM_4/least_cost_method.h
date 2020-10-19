@@ -10,12 +10,16 @@ class LeastCostMethod : public DataProcessing
 public:
     LeastCostMethod(MatrixPtr suppliers, MatrixPtr comsumers, MatrixPtr costs);
 
-    void processing(MainDataStructPtr data) override;
+    void init(MainDataStructPtr data) override;
+    bool oneStep(MainDataStructPtr data) override;
 
 private:
     MatrixPtr _suppliers;
     MatrixPtr _comsumers;
     MatrixPtr _costs;
+
+    Matrix suppliers;
+    Matrix comsumers;
 };
 
 #endif // LEASTCOSTMETHOD_H

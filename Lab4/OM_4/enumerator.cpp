@@ -1,6 +1,9 @@
 #include "enumerator.h"
 
-Enumerator::Enumerator()
-{
+Enumerator::Enumerator() {
 
+}
+
+bool Enumerator::reset()  {
+    return false;
 }

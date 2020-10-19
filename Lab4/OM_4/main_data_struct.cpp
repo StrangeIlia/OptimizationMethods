@@ -4,60 +4,20 @@ MainDataStruct::MainDataStruct() {
 
 }
 
-MainDataStruct::SortedData MainDataStruct::rows(int column) const {
+MainDataStruct::RowsColumns MainDataStruct::rows(int column) const {
     auto iter = columnsData.find(column);
-    if(iter == rowsData.end()) return SortedData();
+    if(iter == rowsData.end()) return RowsColumns();
     return *iter;
 }
 
-MainDataStruct::SortedData MainDataStruct::columns(int row) const {
+MainDataStruct::RowsColumns MainDataStruct::columns(int row) const {
     auto iter = rowsData.find(row);
-    if(iter == rowsData.end()) return SortedData();
+    if(iter == rowsData.end()) return RowsColumns();
     return *iter;
 }
 
-MainDataStruct::Range MainDataStruct::upper(int row, int column) const {
-    auto columnIter = columnsData.find(row);
-    if(columnIter == columnsData.end()) return Range(0, 0);
-    return Range(columnIter->begin(), columnIter->upperBound(column));
-}
-
-MainDataStruct::Range MainDataStruct::lower(int row, int column) const {
-    auto columnIter = columnsData.find(row);
-    if(columnIter == columnsData.end()) return Range(0, 0);
-    return Range(columnIter->upperBound(column), columnIter->end());
-}
-
-MainDataStruct::Range MainDataStruct::left(int row, int column) const {
-    auto rowIter = rowsData.find(row);
-    if(rowIter == rowsData.end()) return Range(0, 0);
-    return Range(rowIter->begin(), rowIter->upperBound(column));
-}
-
-MainDataStruct::Range MainDataStruct::right(int row, int column) const {
-    auto rowIter = rowsData.find(row);
-    if(rowIter == rowsData.end()) return Range(0, 0);
-    return Range(rowIter->upperBound(column), rowIter->end());
-}
-
-void MainDataStruct::insertIndex(int row, int column) {
-    if(!hasIndex(row, column)) {
-        VariantIndexPtr index(new VariantIndex);
-        index->row = row;
-        index->column = column;
-
-        auto rowIter = rowsData.find(row);
-        if(rowIter == rowsData.end()) {
-            rowIter = rowsData.insert(row, SortedData());
-        }
-        rowIter->insert(column, index);
-
-        auto columnIter = columnsData.find(column);
-        if(columnIter == columnsData.end()) {
-            columnIter = columnsData.insert(column, SortedData());
-        }
-        columnIter->insert(row, index);
-    }
+void MainDataStruct::insertIndex(int row, int column, double count) {
+    insertIndex(VariantIndexPtr(new VariantIndex{ row, column, count }));
 }
 
 void MainDataStruct::removeIndex(int row, int column) {
@@ -72,6 +32,26 @@ void MainDataStruct::removeIndex(int row, int column) {
     columnIter->remove(row);
     if(columnIter->size() == 0)
         columnsData.remove(column);
+}
+
+void MainDataStruct::insertIndex(VariantIndexPtr ptr) {
+    if(!hasIndex(ptr->row, ptr->column)) {
+        auto rowIter = rowsData.find(ptr->row);
+        if(rowIter == rowsData.end()) {
+            rowIter = rowsData.insert(ptr->row, RowsColumns());
+        }
+        rowIter->insert(ptr->column, ptr);
+
+        auto columnIter = columnsData.find(ptr->column);
+        if(columnIter == columnsData.end()) {
+            columnIter = columnsData.insert(ptr->column, RowsColumns());
+        }
+        columnIter->insert(ptr->row, ptr);
+    }
+}
+
+void MainDataStruct::removeIndex(VariantIndexPtr ptr) {
+    removeIndex(ptr->row, ptr->column);
 }
 
 VariantIndexPtr MainDataStruct::index(int row, int column) const {

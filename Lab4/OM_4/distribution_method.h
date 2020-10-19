@@ -8,20 +8,16 @@
 class DistributionMethod : public DataProcessing
 {
 public:
-    DistributionMethod(MatrixPtr suppliers, MatrixPtr comsumers, MatrixPtr costs);
+    DistributionMethod(MatrixPtr costs);
 
-    void processing(MainDataStructPtr data) override;
+    bool oneStep(MainDataStructPtr data) override;
 
-private:
-    MatrixPtr _suppliers;
-    MatrixPtr _comsumers;
+protected:
     MatrixPtr _costs;
 
-
-
     static QList<VariantIndexPtr> createCycle(int row, int column, MainDataStructPtr data);
-
     double cycleCost(QList<VariantIndexPtr> cycle) const;
+    static VariantIndexPtr updateCycle(QList<VariantIndexPtr> cycle);
 };
 
 #endif // DISTRIBUTIONMETHOD_H
