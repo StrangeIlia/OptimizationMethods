@@ -2,7 +2,7 @@
 #define POTENTIALMETHOD_H
 
 #include "distribution_method.h"
-#include "math/matrix/matrix_operations.h"
+#include "math/matrix/matrix_operations.hpp"
 
 class PotentialMethod : public DistributionMethod
 {

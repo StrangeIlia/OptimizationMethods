@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
+    <width>890</width>
     <height>600</height>
    </rect>
   </property>
@@ -242,23 +242,23 @@
         </spacer>
        </item>
        <item>
-        <widget class="QComboBox" name="comboBox">
+        <widget class="QComboBox" name="initMethod">
          <property name="sizePolicy">
-          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+          <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
-         <item>
-          <property name="text">
-           <string>Распределительный метод</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Метод потенциалов</string>
-          </property>
-         </item>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="calculationMethod">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
         </widget>
        </item>
        <item>

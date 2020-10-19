@@ -4,17 +4,17 @@
 #include "main_data_struct.h"
 #include "math/matrix/MatrixOnRow.hpp"
 
-class DataProcessing;
+class DataHandler;
 
 typedef MatrixOnRow<double>             Matrix;
 typedef QSharedPointer<Matrix>          MatrixPtr;
-typedef QSharedPointer<DataProcessing>  DataProcessingPtr;
+typedef QSharedPointer<DataHandler>     DataHandlerPtr;
 
-class DataProcessing
+class DataHandler
 {
 public:
-    DataProcessing();
-    virtual ~DataProcessing();
+    DataHandler();
+    virtual ~DataHandler();
 
     virtual void init(MainDataStructPtr data);
     virtual bool oneStep(MainDataStructPtr data) = 0;

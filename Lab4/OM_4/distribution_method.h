@@ -3,9 +3,9 @@
 
 #include <QStack>
 
-#include "data_processing.h"
+#include "data_handler.h"
 
-class DistributionMethod : public DataProcessing
+class DistributionMethod : public DataHandler
 {
 public:
     DistributionMethod(MatrixPtr costs);

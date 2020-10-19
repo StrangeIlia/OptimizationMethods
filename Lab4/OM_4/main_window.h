@@ -25,10 +25,16 @@ private:
     Ui::MainWindow *ui;
 
     void initTables();
+    void initComboboxes();
+    void initActiveButton();
     void createConsole() const;
 
     void printText(QString text) const;
     void printHtml(QString html)  const;
+
+    bool checkCosts() const;
+    bool checkSuplliers() const;
+    bool checkComsumers() const;
 
     void closeEvent(QCloseEvent *event) override;
 

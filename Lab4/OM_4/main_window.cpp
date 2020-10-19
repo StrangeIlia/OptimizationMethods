@@ -7,6 +7,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     initTables();
+    initComboboxes();
 }
 
 MainWindow::~MainWindow()
@@ -104,6 +105,17 @@ void MainWindow::initTables() {
     ui->comsumers->setItemDelegate(delegate);
 }
 
+void MainWindow::initComboboxes() {
+    ui->initMethod->addItem(tr("Метод северо-западного угла"), 0);
+    ui->initMethod->addItem(tr("Метод наименьшей стоимости"), 1);
+    ui->calculationMethod->addItem(tr("Распределительный метод"), 0);
+    ui->calculationMethod->addItem(tr("Метод потенциалов"), 1);
+}
+
+void initActiveButton() {
+
+}
+
 void MainWindow::createConsole() const {
     Console *console = new Console();
     connect(this, &MainWindow::sendText, console, &Console::printText);
@@ -124,6 +136,18 @@ void MainWindow::printHtml(QString html)  const {
         createConsole();
     }
     emit sendHtml(html);
+}
+
+bool MainWindow::checkCosts() const {
+
+}
+
+bool MainWindow::checkSuplliers() const {
+
+}
+
+bool MainWindow::checkComsumers() const {
+
 }
 
 void MainWindow::closeEvent(QCloseEvent *event) {

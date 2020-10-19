@@ -3,9 +3,9 @@
 
 #include <algorithm>
 
-#include "data_processing.h"
+#include "data_handler.h"
 
-class LeastCostMethod : public DataProcessing
+class LeastCostMethod : public DataHandler
 {
 public:
     LeastCostMethod(MatrixPtr suppliers, MatrixPtr comsumers, MatrixPtr costs);

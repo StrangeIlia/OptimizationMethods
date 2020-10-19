@@ -1,9 +1,9 @@
 #ifndef NORTWESTCORNERMETHOD_H
 #define NORTWESTCORNERMETHOD_H
 
-#include "data_processing.h"
+#include "data_handler.h"
 
-class NortwestCornerMethod : public DataProcessing
+class NortwestCornerMethod : public DataHandler
 {
 public:
     NortwestCornerMethod(MatrixPtr _currentSuppliers, MatrixPtr _currentComsumers);
