@@ -28,12 +28,12 @@ public:
         for(Index i = 0; i != left.rows(); ++i) {
             Index bestIndex = i;
             for(Index ii = i; ii != left.rows(); ++ii) {
-                if(std::abs(left(ii, ii)) > eps) {
+                if(std::abs(left(ii, i)) > eps) {
                     bestIndex = ii;
                     break;
                 }
             }
-            if(std::abs(left(bestIndex, bestIndex)) < eps) {
+            if(std::abs(left(bestIndex, i)) < eps) {
                 return false;
             }
             if(bestIndex != i) {

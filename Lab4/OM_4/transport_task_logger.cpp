@@ -45,17 +45,17 @@ void TransportTaskLogger::printTransportTable(MainDataStructPtr data) {
     }
 
     auto printCell = [&out] (double value, double cost) {
-        out << "<table border=\"1px solid black;\" cellpadding=\"4\" cellspacing=\"0\">";
-        out << "<tr><td colspan=\"2\" style=\"border-bottom: 0px;\">";
+        out << "<table width=\"100%\" height=\"100%\" border=\"1\" cellpadding=\"4\" cellspacing=\"0\">";
+        out << "<tr><td colspan=\"2\" style=\"border-bottom: 0;\">";
         if(std::abs(value) > std::numeric_limits<double>::epsilon())    out << value;
         else                                                            out << " ";
-        out << "</td></tr><tr>< td ></td><td><span style=\"vertical-align:sub;\">";
-        //  style=\"border-top: 0px; border-right: 0px;\"
+        out << "</td></tr><tr><td style=\"border-top: 0; border-right: 0;\"></td><td><span style=\"vertical-align:sub;\">";
+        //
         out << cost;
         out << "</span></td></tr></table>";
     };
 
-    out << "<table border=\"1 solid black;\" cellpadding=\"4\" cellspacing=\"0\"><tr><td/>";
+    out << "<table border=\"1\" cellpadding=\"0\" cellspacing=\"0\"><tr><td/>";
     for(int i = 0; i != _comsumers->columns(); ++i) {
         out << "<td>" << _comsumers->cell(0, i) << "</td>";
     }

@@ -9,7 +9,7 @@ bool PotentialMethod::oneStep(MainDataStructPtr data) {
     for(int i = 0; i != _costs->rows(); ++i) {
         for(int j = 0; j != _costs->columns(); ++j) {
             if(data->hasIndex(i, j)) continue;
-            double value = potentials.first[i] + potentials.second[j];
+            double value = _costs->cell(i, j) - (potentials.first[i] + potentials.second[j]);
             if(value < 0) {
                 auto cycle = createCycle(i, j, data);
                 auto removedIndex = updateCycle(cycle);
@@ -38,15 +38,16 @@ QPair<QVector<double>, QVector<double>> PotentialMethod::calculatePotential(Main
         }
     }
 
-    MatrixOperations::slay(left, right);
+    bool result = MatrixOperations::slay(left, right);
     QVector<double> suppliers; suppliers.reserve(_costs->rows());
     QVector<double> comsumers; comsumers.reserve(_costs->columns());
     for(int i = 0; i != _costs->rows(); ++i) {
         suppliers.push_back(right(i, 0));
     }
-    for(int i = 0; i != _costs->columns(); ++i) {
+    for(int i = 0; i != _costs->columns() - 1; ++i) {
         comsumers.push_back(right(i + _costs->rows(), 0));
     }
+    comsumers.push_back(0);
 
     return QPair<QVector<double>, QVector<double>>(suppliers, comsumers);
 }

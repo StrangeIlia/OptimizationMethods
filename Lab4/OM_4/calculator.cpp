@@ -77,23 +77,29 @@ void Calculator::calculate(MatrixPtr suppliers, MatrixPtr comsumers, MatrixPtr c
 
     logger->message(tr("Начальные условия закрытой транспортной задачи"));
     logger->printTransportTable(basis);
-    logger->message(tr("Процесс инициализации:"));
+    logger->message(tr("Процесс инициализации: (") + _init + ")");
     initTask->run();
-    logger->message(tr("Процесс нахождения решения:"));
+    logger->message(tr("Процесс нахождения решения: (") + _calculate + ")");
     calcTask->run();
+
+    double cost = 0;
+    for(auto index : basis->data()) {
+        cost += costs->cell(index->row, index->column) * index->count;
+    }
+    logger->message(tr("Суммартная стоимость решения: ") + QString::number(cost));
 
     _buffer->flush();
     emit finished();
 }
 
 bool Calculator::setInitMethod(const QString &str) {
-    if(_initMethods.contains(str)) return false;
+    if(!_initMethods.contains(str)) return false;
     _init = str;
     return true;
 }
 
 bool Calculator::setCalcMethod(const QString &str) {
-    if(_calculateMethods.contains(str)) return false;
+    if(!_calculateMethods.contains(str)) return false;
     _calculate = str;
     return true;
 }

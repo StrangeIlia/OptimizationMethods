@@ -86,7 +86,8 @@ double DistributionMethod::cycleCost(QList<VariantIndexPtr> cycle) const {
 VariantIndexPtr DistributionMethod::updateCycle(QList<VariantIndexPtr> cycle) {
     VariantIndexPtr index;
     double minValue = std::numeric_limits<double>::max();
-    for(auto ptr : cycle) {
+    for(int i = 1; i < cycle.size(); i += 2) {
+        auto ptr = cycle[i];
         if(ptr->count < minValue) {
             index = ptr;
             minValue = ptr->count;

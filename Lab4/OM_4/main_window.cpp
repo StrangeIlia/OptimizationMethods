@@ -192,6 +192,16 @@ void MainWindow::initComboboxesAndActiveButton() {
        this->calculate();
     });
 
+    if(ui->initMethod->count() > 1) {
+        ui->initMethod->setCurrentIndex(1);
+        ui->initMethod->setCurrentIndex(0);
+    }
+
+    if(ui->calculationMethod->count() > 1) {
+        ui->calculationMethod->setCurrentIndex(1);
+        ui->calculationMethod->setCurrentIndex(0);
+    }
+
     thread->start();
 }
 

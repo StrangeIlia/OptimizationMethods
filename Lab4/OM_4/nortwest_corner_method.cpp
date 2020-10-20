@@ -18,7 +18,7 @@ void NortwestCornerMethod::init(MainDataStructPtr data) {
 }
 
 bool NortwestCornerMethod::oneStep(MainDataStructPtr data) {
-    if(i == _currentSuppliers.rows() || j == _currentComsumers.columns())
+    if(i == _currentSuppliers.columns() || j == _currentComsumers.columns())
         return false;
 
     if(_currentSuppliers(0, i) < _currentComsumers(0, j)) {
