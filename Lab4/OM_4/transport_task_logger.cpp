@@ -6,10 +6,10 @@ TransportTaskLogger::TransportTaskLogger(QTextStreamPtr stream) : HtmlLogger(str
 
 bool TransportTaskLogger::isValid() const {
     if(_comsumers == nullptr)   return false;
-    if(_suplliers == nullptr)   return false;
+    if(_suppliers == nullptr)   return false;
     if(_costs == nullptr)       return false;
     if(_comsumers->columns() != _costs->columns())  return false;
-    if(_suplliers->columns() != _costs->rows())     return false;
+    if(_suppliers->columns() != _costs->rows())     return false;
     return true;
 }
 
@@ -18,7 +18,7 @@ MatrixPtr TransportTaskLogger::costs() const {
 }
 
 MatrixPtr TransportTaskLogger::suplliers() const {
-    return _suplliers;
+    return _suppliers;
 }
 
 MatrixPtr TransportTaskLogger::comsumers() const {
@@ -29,8 +29,8 @@ void TransportTaskLogger::setCosts(MatrixPtr ptr) {
     _costs = ptr;
 }
 
-void TransportTaskLogger::setSuplliers(MatrixPtr ptr) {
-    _suplliers = ptr;
+void TransportTaskLogger::setSuppliers(MatrixPtr ptr) {
+    _suppliers = ptr;
 }
 
 void TransportTaskLogger::setComsumers(MatrixPtr ptr) {
@@ -45,23 +45,24 @@ void TransportTaskLogger::printTransportTable(MainDataStructPtr data) {
     }
 
     auto printCell = [&out] (double value, double cost) {
-        out << "<table border=\"1px solid;\" cellpadding=\"4\" cellspacing=\"0\">";
+        out << "<table border=\"1px solid black;\" cellpadding=\"4\" cellspacing=\"0\">";
         out << "<tr><td colspan=\"2\" style=\"border-bottom: 0px;\">";
         if(std::abs(value) > std::numeric_limits<double>::epsilon())    out << value;
         else                                                            out << " ";
-        out << "</td><tr><td style=\"border-top: 0px; border-right: 0px;\"></td><td><span style=\"vertical-align:sub;\">";
+        out << "</td></tr><tr>< td ></td><td><span style=\"vertical-align:sub;\">";
+        //  style=\"border-top: 0px; border-right: 0px;\"
         out << cost;
         out << "</span></td></tr></table>";
     };
 
-    out << "<table><tr><td/>";
+    out << "<table border=\"1 solid black;\" cellpadding=\"4\" cellspacing=\"0\"><tr><td/>";
     for(int i = 0; i != _comsumers->columns(); ++i) {
-        out << "<th>" << _comsumers->cell(0, i) << "<th>";
+        out << "<td>" << _comsumers->cell(0, i) << "</td>";
     }
     out << "</tr>";
 
-    for(int i = 0; i != _suplliers->columns(); ++i) {
-        out << "<tr><th>" << _suplliers->cell(0, i) << "</th>";
+    for(int i = 0; i != _suppliers->columns(); ++i) {
+        out << "<tr><td>" << _suppliers->cell(0, i) << "</td>";
         auto row = data->columns(i);
         for(int j = 0; j != _comsumers->columns(); ++j) {
             auto value = row.contains(j) ? row[j]->count : 0;
@@ -71,4 +72,5 @@ void TransportTaskLogger::printTransportTable(MainDataStructPtr data) {
         }
         out << "</tr>";
     }
+    out << "</table>";
 }

@@ -20,13 +20,13 @@ public:
     MatrixPtr comsumers() const;
 
     void setCosts(MatrixPtr ptr);
-    void setSuplliers(MatrixPtr ptr);
+    void setSuppliers(MatrixPtr ptr);
     void setComsumers(MatrixPtr ptr);
 
     void printTransportTable(MainDataStructPtr data);
 
 private:
-    MatrixPtr _suplliers;
+    MatrixPtr _suppliers;
     MatrixPtr _comsumers;
     MatrixPtr _costs;
 };

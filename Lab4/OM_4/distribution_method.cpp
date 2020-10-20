@@ -30,11 +30,13 @@ QList<VariantIndexPtr> DistributionMethod::createCycle(int row, int column, Main
 
          bool topDown() {
              const auto &curr = list.back();
-             if(curr->column == list.front()->column)
-                 return list.size() != 1;
+             if(list.size() != 1 && curr->column == list.front()->column)
+                 return true;
 
              auto rows = data->rows(curr->column);
              for(const auto &next : rows) {
+                 if(next == curr) continue;
+
                  list.push_back(next);
                  if(leftRight()) return true;
                  list.pop_back();
@@ -45,11 +47,13 @@ QList<VariantIndexPtr> DistributionMethod::createCycle(int row, int column, Main
 
          bool leftRight() {
              const auto &curr = list.back();
-             if(curr->row == list.front()->row)
-                 return list.size() != 1;
+             if(list.size() != 1 && curr->row == list.front()->row)
+                 return true;
 
              auto columns = data->columns(curr->row);
              for(const auto &next : columns) {
+                 if(next == curr) continue;
+
                  list.push_back(next);
                  if(topDown()) return true;
                  list.pop_back();

@@ -16,6 +16,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    calculator.cpp \
     math/matrix/matrix_operations.cpp \
     calculation_task.cpp \
     console.cpp \
@@ -29,9 +30,11 @@ SOURCES += \
     main_window.cpp \
     nortwest_corner_method.cpp \
     potential_method.cpp \
+    text_buffer.cpp \
     transport_task_logger.cpp
 
 HEADERS += \
+    calculator.h \
     math/matrix/MatrixOnRow.hpp \
     math/matrix/matrix_operations.hpp \
     calculation_task.h \
@@ -45,6 +48,7 @@ HEADERS += \
     main_window.h \
     nortwest_corner_method.h \
     potential_method.h \
+    text_buffer.h \
     transport_task_logger.h
 
 FORMS += \

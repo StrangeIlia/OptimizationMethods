@@ -4,9 +4,10 @@
 #include <QTextStream>
 #include <QSharedPointer>
 
+#include "text_buffer.h"
+
 class HtmlLogger;
 
-typedef QSharedPointer<QTextStream> QTextStreamPtr;
 typedef QSharedPointer<HtmlLogger>  HtmlLoggerPtr;
 
 class HtmlLogger
