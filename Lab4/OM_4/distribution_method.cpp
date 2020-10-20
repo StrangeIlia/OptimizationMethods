@@ -5,11 +5,20 @@ DistributionMethod::DistributionMethod(MatrixPtr costs)  {
 }
 
 bool DistributionMethod::oneStep(MainDataStructPtr data) {
-    for(int i = 0; i != _costs->columns(); ++i) {
+    qDebug() << "\nNew iteration";
+    for(int i = 0; i != _costs->rows(); ++i) {
         for(int j = 0; j != _costs->columns(); ++j) {
             if(!data->hasIndex(i, j)) {
                 auto cycle = createCycle(i, j, data);
-                if(cycleCost(cycle) < 0) {
+                auto cost = cycleCost(cycle);
+
+                QString str = "(";
+                for(auto ptr : cycle) {
+                    str += "(" + QString::number(ptr->row) + ", " + QString::number(ptr->column) + "), ";
+                }
+                qDebug() << "(" << i << ", " << j << ") = " << cost << str;
+
+                if(cost < 0) {
                     auto removedIndex = updateCycle(cycle);
                     data->removeIndex(removedIndex);
                     auto additionIndex = cycle.front();
@@ -19,6 +28,7 @@ bool DistributionMethod::oneStep(MainDataStructPtr data) {
             }
         }
     }
+
     return false;
 }
 
