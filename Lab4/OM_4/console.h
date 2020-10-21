@@ -23,6 +23,11 @@ public slots:
 
 private:
     Ui::Console *ui;
+
+    void closeEvent(QCloseEvent *event) override;
+
+signals:
+    void closed();
 };
 
 #endif // CONSOLE_H

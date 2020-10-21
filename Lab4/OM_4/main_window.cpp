@@ -228,7 +228,6 @@ void MainWindow::createConsole() const {
     connect(this, &MainWindow::sendText, console, &Console::printText);
     connect(this, &MainWindow::sendHtml, console, &Console::printHtml);
     connect(this, &MainWindow::windowClosed, console, &Console::close);
-    connect(console, &Console::close, console, &Console::deleteLater);
     console->show();
 }
 

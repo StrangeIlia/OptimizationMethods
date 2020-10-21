@@ -4,8 +4,24 @@ PotentialMethod::PotentialMethod(MatrixPtr costs) : DistributionMethod(costs) {
 
 }
 
+//#include <QDebug>
+
 bool PotentialMethod::oneStep(MainDataStructPtr data) {
     auto potentials = calculatePotential(data);
+
+//    QString str;
+//    qDebug() << "New iteration:";
+
+//    str += "Suplliers: ";
+//    for(int i = 0; i != potentials.first.size(); ++i)
+//        str += QString::number(potentials.first[i]) + " ";
+
+//    str += "Comsumers: ";
+//    for(int i = 0; i != potentials.second.size(); ++i)
+//        str += QString::number(potentials.second[i]) + " ";
+
+//    qDebug() << str;
+
     for(int i = 0; i != _costs->rows(); ++i) {
         for(int j = 0; j != _costs->columns(); ++j) {
             if(data->hasIndex(i, j)) continue;
@@ -38,7 +54,7 @@ QPair<QVector<double>, QVector<double>> PotentialMethod::calculatePotential(Main
         }
     }
 
-    bool result = MatrixOperations::slay(left, right);
+    MatrixOperations::slay(left, right);
     QVector<double> suppliers; suppliers.reserve(_costs->rows());
     QVector<double> comsumers; comsumers.reserve(_costs->columns());
     for(int i = 0; i != _costs->rows(); ++i) {

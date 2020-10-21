@@ -4,21 +4,21 @@ DistributionMethod::DistributionMethod(MatrixPtr costs)  {
     _costs = costs;
 }
 
-#include <QDebug>
+//#include <QDebug>
 
 bool DistributionMethod::oneStep(MainDataStructPtr data) {
-    qDebug() << "\nNew iteration";
+//    qDebug() << "\nNew iteration";
     for(int i = 0; i != _costs->rows(); ++i) {
         for(int j = 0; j != _costs->columns(); ++j) {
             if(!data->hasIndex(i, j)) {
                 auto cycle = createCycle(i, j, data);
                 auto cost = cycleCost(cycle);
 
-                QString str = "(";
-                for(auto ptr : cycle) {
-                    str += "(" + QString::number(ptr->row) + ", " + QString::number(ptr->column) + "), ";
-                }
-                qDebug() << "(" << i << ", " << j << ") = " << cost << str;
+//                QString str = "(";
+//                for(auto ptr : cycle) {
+//                    str += "(" + QString::number(ptr->row) + ", " + QString::number(ptr->column) + "), ";
+//                }
+//                qDebug() << "(" << i << ", " << j << ") = " << cost << str;
 
                 if(cost < 0) {
                     auto removedIndex = updateCycle(cycle);
@@ -31,16 +31,16 @@ bool DistributionMethod::oneStep(MainDataStructPtr data) {
         }
     }
 
-    static bool swithBool = false;
-    if(!swithBool) {
-        swithBool = true;
-        auto cycle = createCycle(2, 1, data);
-        auto removedIndex = updateCycle(cycle);
-        data->removeIndex(removedIndex);
-        auto additionIndex = cycle.front();
-        data->insertIndex(additionIndex);
-        return true;
-    }
+//    static bool swithBool = false;
+//    if(!swithBool) {
+//        swithBool = true;
+//        auto cycle = createCycle(2, 1, data);
+//        auto removedIndex = updateCycle(cycle);
+//        data->removeIndex(removedIndex);
+//        auto additionIndex = cycle.front();
+//        data->insertIndex(additionIndex);
+//        return true;
+//    }
 
     return false;
 }

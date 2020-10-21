@@ -9,6 +9,7 @@ Console::Console(QWidget *parent) :
     connect(ui->clear, &QPushButton::clicked, [this] (bool /*ignored*/){
         this->clear();
     });
+    connect(this, &Console::closed, this, &Console::deleteLater);
 }
 
 Console::~Console()
@@ -34,4 +35,8 @@ void Console::printHtml(QString html) {
 
 void Console::clear() {
     ui->textEdit->setHtml("");
+}
+
+void Console::closeEvent(QCloseEvent *event) {
+    emit closed();
 }
