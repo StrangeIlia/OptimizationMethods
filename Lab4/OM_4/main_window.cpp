@@ -63,14 +63,20 @@ bool MainWindow::checkInputData() const {
 }
 
 void MainWindow::initTestVariant() {
-    QVector<double> sullpierValues = {18, 19, 22, 19};
+    QVector<double> sullpierValues =
+            {18, 12, 22, 19};
+//            {41, 33, 25, 14};
+//            {19, 19, 19, 19};
     ui->suppliers->setColumnCount(sullpierValues.size());
     for(int i = 0; i != sullpierValues.size(); ++i) {
         ui->suppliers->setItem(0, i, new QTableWidgetItem());
         ui->suppliers->item(0, i)->setData(Qt::DisplayRole, sullpierValues[i]);
     }
 
-    QVector<double> comsumersValues = {14, 11, 17, 15, 14};
+    QVector<double> comsumersValues =
+            {14, 11, 17, 15, 14};
+//            {34, 39, 24, 8, 8};
+//            {17, 17, 17, 17, 8};
     ui->comsumers->setColumnCount(comsumersValues.size());
     for(int i = 0; i != comsumersValues.size(); ++i) {
         ui->comsumers->setItem(0, i, new QTableWidgetItem());
@@ -78,10 +84,21 @@ void MainWindow::initTestVariant() {
     }
 
      QVector<QVector<double>> costValues = {
+         /// Вариант корявый
          {9,    21,     22,     14,     10},
          {30,   34,     42,     23,     26},
          {8,    17,     30,     27,     9},
          {11,   20,     24,     7,      25}
+
+//         {12,   15,     9,      19,     22},
+//         {20,   15,     11,     2,      19},
+//         {21,   26,     23,     7,      16},
+//         {11,   24,     8,      3,      29}
+
+//         {22,   23,     16,     12,     14},
+//         {17,   30,     1,      8,      25},
+//         {27,   15,     13,     23,     22},
+//         {3,    12,     21,     26,     7}
      };
 
      for(int i = 0; i != costValues.size(); ++i) {
@@ -211,18 +228,19 @@ void MainWindow::createConsole() const {
     connect(this, &MainWindow::sendText, console, &Console::printText);
     connect(this, &MainWindow::sendHtml, console, &Console::printHtml);
     connect(this, &MainWindow::windowClosed, console, &Console::close);
+    connect(console, &Console::close, console, &Console::deleteLater);
     console->show();
 }
 
 void MainWindow::printText(QString text) const {
-    if(receivers(SIGNAL(printText)) == 0) {
+    if(receivers(SIGNAL(sendText(QString))) == 0) {
         createConsole();
     }
     emit sendText(text);
 }
 
 void MainWindow::printHtml(QString html)  const {
-    if(receivers(SIGNAL(printHtml)) == 0) {
+    if(receivers(SIGNAL(sendHtml(QString))) == 0) {
         createConsole();
     }
     emit sendHtml(html);

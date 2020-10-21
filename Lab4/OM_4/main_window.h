@@ -36,7 +36,7 @@ private:
     void createConsole() const;
 
     void printText(QString text) const;
-    void printHtml(QString html)  const;
+    void printHtml(QString html) const;
 
     static MatrixPtr matrix(QTableWidget *widget);
 

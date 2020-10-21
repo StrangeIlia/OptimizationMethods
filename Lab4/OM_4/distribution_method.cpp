@@ -4,6 +4,8 @@ DistributionMethod::DistributionMethod(MatrixPtr costs)  {
     _costs = costs;
 }
 
+#include <QDebug>
+
 bool DistributionMethod::oneStep(MainDataStructPtr data) {
     qDebug() << "\nNew iteration";
     for(int i = 0; i != _costs->rows(); ++i) {
@@ -27,6 +29,17 @@ bool DistributionMethod::oneStep(MainDataStructPtr data) {
                 }
             }
         }
+    }
+
+    static bool swithBool = false;
+    if(!swithBool) {
+        swithBool = true;
+        auto cycle = createCycle(2, 1, data);
+        auto removedIndex = updateCycle(cycle);
+        data->removeIndex(removedIndex);
+        auto additionIndex = cycle.front();
+        data->insertIndex(additionIndex);
+        return true;
     }
 
     return false;

@@ -1,8 +1,6 @@
 #ifndef DATAPROCESSING_H
 #define DATAPROCESSING_H
 
-#include <QDebug>
-
 #include "main_data_struct.h"
 #include "math/matrix/MatrixOnRow.hpp"
 

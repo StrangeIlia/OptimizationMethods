@@ -45,13 +45,27 @@ QSet<QString> Calculator::calculateMethods() {
     return _calculateMethods;
 }
 
-void Calculator::calculate(MatrixPtr suppliers, MatrixPtr comsumers, MatrixPtr costs) {
+void Calculator::calculate(MatrixPtr suplliers, MatrixPtr comsumers, MatrixPtr costs) {
+    if(suplliers->rows() != 1)  {
+        return;
+    }
+    if(comsumers->rows() != 1) {
+        return;
+    }
+    if(suplliers->columns() != costs->rows()) {
+        return;
+    }
+    if(comsumers->columns() != costs->columns()) {
+        return;
+    }
+
+
     DataHandlerPtr init, calc;
 
     if(_init == nortwestCornerMethod) {
-        init.reset(new NortwestCornerMethod(suppliers, comsumers));
+        init.reset(new NortwestCornerMethod(suplliers, comsumers));
     } else if(_init == leastCostMethod) {
-        init.reset(new LeastCostMethod(suppliers, comsumers, costs));
+        init.reset(new LeastCostMethod(suplliers, comsumers, costs));
     } else {
         return;
     }
@@ -69,7 +83,7 @@ void Calculator::calculate(MatrixPtr suppliers, MatrixPtr comsumers, MatrixPtr c
     TransportTaskLoggerPtr logger(new TransportTaskLogger(_buffer->stream()));
 
     logger->setCosts(costs);
-    logger->setSuppliers(suppliers);
+    logger->setSuppliers(suplliers);
     logger->setComsumers(comsumers);
 
     CalculationTask *initTask = new CalculationTask(init, basis, logger, this);
@@ -77,6 +91,43 @@ void Calculator::calculate(MatrixPtr suppliers, MatrixPtr comsumers, MatrixPtr c
 
     logger->message(tr("Начальные условия закрытой транспортной задачи"));
     logger->printTransportTable(basis);
+
+    double numberOfGoods = 0;
+    for(int i = 0; i != suplliers->columns(); ++i) {
+        numberOfGoods += suplliers->cell(0, i);
+    }
+    for(int i = 0; i != comsumers->columns(); ++i) {
+        numberOfGoods -= comsumers->cell(0, i);
+    }
+    if(std::abs(numberOfGoods) > std::numeric_limits<double>::epsilon()) {
+        double maxValue = -1;
+        for(int i = 0; i != costs->rows(); ++i) {
+            for(int j = 0; j != costs->columns(); ++j) {
+                maxValue = std::max(std::abs(costs->cell(i, j)), maxValue);
+            }
+        }
+        maxValue *= 100;
+
+        logger->message(tr("Задача не является закрытой, поэтому преобразуем ее в закрытую"));
+        if(numberOfGoods < 0) {
+            suplliers->insertColumns(suplliers->columns(), 1);
+            suplliers->setCell(0, suplliers->columns() - 1, -numberOfGoods);
+            int rowNumber = costs->rows();
+            costs->insertRows(rowNumber, 1);
+            for(int j = 0; j != costs->columns(); ++j) {
+                costs->setCell(rowNumber, j, maxValue);
+            }
+        } else {
+            comsumers->insertColumns(comsumers->columns(), 1);
+            comsumers->setCell(0, comsumers->columns() - 1,  numberOfGoods);
+            int columnNumber = costs->columns();
+            costs->insertColumns(columnNumber, 1);
+            for(int i = 0; i != costs->rows(); ++i) {
+                costs->setCell(i, columnNumber, maxValue);
+            }
+        }
+    }
+
     logger->message(tr("Процесс инициализации: (") + _init + ")");
     initTask->run();
     logger->message(tr("Процесс нахождения решения: (") + _calculate + ")");
