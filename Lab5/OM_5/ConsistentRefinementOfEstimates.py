@@ -41,8 +41,31 @@ class ConsistentRefinementOfEstimates(SimplexTable):
                 return True
         return False
 
+    def __find_all_basis__(self):
+        """
+        Ищет базисы, которые были до этого
+        Возвращает истина, если нашел базисы для всех строк
+        """
+        if self.full_basis():
+            return True
+        count_variable = len(self.__objective_function__.coefficients)
+        for j in range(count_variable):
+            first_row = None
+            second_row = None
+            for i in range(0, len(self.__rows__)):
+                row = self.__rows__[i]
+                if row.coefficients[j] != 0:
+                    if first_row != None:
+                        second_row = i
+                        break
+                    else:
+                        first_row = i
+            if second_row == None and first_row != None:
+                self.__create_basis__(first_row, j)
+        return self.full_basis()
+
     def one_step(self):
-        if not self.full_basis():
+        if not self.__find_all_basis__():
             return self.init()
         if self.__check_objective_function__():
             return self.__one_step__()
