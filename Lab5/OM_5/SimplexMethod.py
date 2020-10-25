@@ -133,7 +133,7 @@ class SimplexTable:
         return False
 
     def one_step(self):
-        if not self.full_basis():
+        if not self.__find_all_basis__():
             self.init()
             return True
         return self.__one_step__()
