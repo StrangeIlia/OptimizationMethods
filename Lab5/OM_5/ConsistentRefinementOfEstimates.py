@@ -1,5 +1,5 @@
 from typing import Optional
-from RestrictionSystem import Purpose, RestrictionSystem
+from RestrictionSystem import RestrictionSystem
 from sys import float_info
 from SimplexMethod import SimplexTable
 
@@ -30,7 +30,7 @@ class ConsistentRefinementOfEstimates(SimplexTable):
             bestValue = float_info.max
             row = self.__rows__[row_number]
             for j in range(len(row.coefficients)):
-                if row.coefficients[j] < 0 and self.__objective_function__.coefficients[j] != 0:
+                if row.coefficients[j] < 0 and abs(self.__objective_function__.coefficients[j]) > 100 * float_info.epsilon:
                     value = -self.__objective_function__.coefficients[j] / \
                         row.coefficients[j]
                     if value < bestValue:
@@ -54,7 +54,7 @@ class ConsistentRefinementOfEstimates(SimplexTable):
             second_row = None
             for i in range(0, len(self.__rows__)):
                 row = self.__rows__[i]
-                if row.coefficients[j] != 0:
+                if abs(row.coefficients[j]) > 100 * float_info.epsilon:
                     if first_row != None:
                         second_row = i
                         break
@@ -69,6 +69,8 @@ class ConsistentRefinementOfEstimates(SimplexTable):
             return self.init()
         if self.__check_objective_function__():
             return self.__one_step__()
-        else: 
+        elif super().__valid_simplex_table__():
             return super().__one_step__()
+        else: 
+            return self.init()
         

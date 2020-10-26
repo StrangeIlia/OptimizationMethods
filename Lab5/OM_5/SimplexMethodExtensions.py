@@ -1,3 +1,4 @@
+from sys import float_info
 from typing import Optional
 from RestrictionSystem import BaseRow, RestrictionSystem
 from SimplexMethod import SimplexTable
@@ -88,8 +89,6 @@ class AbstractArtificialBasis(SimplexTable):
         """
         Инициализирует начало обработки
         """
-        if self.__find_all_basis__():
-            return True
         return self.__add_variables__()
 
     def __can_remove_variables__(self):
@@ -97,9 +96,25 @@ class AbstractArtificialBasis(SimplexTable):
             return False
         count_old_variable = len(
             self.__objective_function__.coefficients) - self.__count_addition_vatiable__
-        for v in self.__basis__:
-            if v == None or v >= count_old_variable:
+        for i in range(len(self.__basis__)):
+            v = self.__basis__[i]
+            if v == None: 
                 return False
+            if v >= count_old_variable:
+                if abs(self.__rows__[i].free_member) < 100 * float_info.epsilon:
+                    index = None
+                    for j in range(count_old_variable):
+                        if self.__basis__.__contains__(j):
+                            continue
+                        if abs(self.__rows__[i].coefficients[j]) <= 100 * float_info.epsilon:
+                            continue
+                        index = j
+                        break
+                    if index == None:
+                        return False
+                    self.__create_basis__(i, index)
+                else:
+                    return False
         return True
 
     def one_step(self):

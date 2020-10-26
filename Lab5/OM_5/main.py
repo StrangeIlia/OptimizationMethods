@@ -1,4 +1,5 @@
 # This Python file uses the following encoding: utf-8
+from typing import List
 from ConsistentRefinementOfEstimates import ConsistentRefinementOfEstimates
 from SimplexMethodExtensions import ArtificialBasis, LargePenaltyMethod
 from SimplexMethod import SimplexTable
@@ -7,9 +8,20 @@ from MainWindow import MainWindow
 import sys
 
 from PySide2.QtWidgets import QApplication
-from RestrictionSystem import Purpose, RestrictionSystem, Sign, Variable
+from RestrictionSystem import Purpose, RestrictionRow, RestrictionSystem, Sign, Variable
 from DualSimplexMethod import DualSimpleMethod, DualSolutonCreator
 
+def system_prepare(system: RestrictionSystem):
+    rows: List[RestrictionRow] = []
+    for v in system.__rows__:
+        if v.sign == Sign.EQUALS:
+            rows.append(v)
+            v.sign = Sign.LESS_OR_EQUAL
+    for v in rows:
+        row = system.create_restriction()
+        row.coefficients = [-value for value in v.coefficients]
+        row.free_member = -v.free_member
+        row.sign = Sign.LESS_OR_EQUAL
 
 def base_calc(table: SimplexTable):
     html = "Начальное состояние системы:<br>"
@@ -104,10 +116,34 @@ if __name__ == "__main__":
 
 
 
+    # func.coefficients = [2, -7, -1, -4]
+    # func.purpose = Purpose.MAX
+
+    # row = system.create_restriction()
+    # row.coefficients = [-3, 1, -4, 1]
+    # row.free_member = 20
+    # row.sign = Sign.EQUALS
+
+    # row = system.create_restriction()
+    # row.coefficients = [2, 3, 4, 2]
+    # row.free_member = 32
+    # row.sign = Sign.MORE_OR_EQUAL
+
+    # row = system.create_restriction()
+    # row.coefficients = [4, 5, 2, -3]
+    # row.free_member = 26
+    # row.sign = Sign.MORE_OR_EQUAL
+
+    system_prepare(system)
+
     dual_task_html = dual_task_calc(system)
     consistent_refinement_of_estimates_html = consistent_refinement_of_estimates_calc(
         system)
 
+    file = open("result.html", "w")
+    file.write(dual_task_html + "<br><br><br>" +
+                      consistent_refinement_of_estimates_html)
+    file.close()
     widget.print_html(dual_task_html + "<br><br><br>" +
                       consistent_refinement_of_estimates_html)
 

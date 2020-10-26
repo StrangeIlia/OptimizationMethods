@@ -38,7 +38,7 @@ class SimplexTable:
         """
         selected_row = self.__rows__[row_index]
         variable_index = variable_index if variable_index != None else 0
-        if selected_row.coefficients[variable_index] == 0:
+        if abs(selected_row.coefficients[variable_index]) < 100 * float_info.epsilon:
             return False
         selected_row /= selected_row.coefficients[variable_index]
         for row in self.__rows__:
@@ -86,7 +86,7 @@ class SimplexTable:
             second_row = None
             for i in range(0, len(self.__rows__)):
                 row = self.__rows__[i]
-                if row.coefficients[j] != 0:
+                if abs(row.coefficients[j]) > float_info.epsilon:
                     if row.free_member / row.coefficients[j] < 0:
                         second_row = i
                         break
@@ -112,7 +112,7 @@ class SimplexTable:
     def __one_step__(self):
         columns = []
         for j in range(len(self.__objective_function__.coefficients)):
-            if self.__objective_function__.coefficients[j] < 0:
+            if self.__objective_function__.coefficients[j] < -float_info.epsilon:
                 columns.append(j)
         columns = sorted(
             columns, key=lambda v: self.__objective_function__.coefficients[v])
@@ -121,7 +121,7 @@ class SimplexTable:
             bestValue = float_info.max
             for i in range(len(self.__rows__)):
                 row = self.__rows__[i]
-                if row.coefficients[column_number] > 0 and row.free_member != 0:
+                if row.coefficients[column_number] > float_info.epsilon and abs(row.free_member) > float_info.epsilon:
                     value = row.free_member / row.coefficients[column_number]
                     if value < bestValue:
                         bestValue = value
