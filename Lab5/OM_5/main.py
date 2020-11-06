@@ -75,23 +75,23 @@ if __name__ == "__main__":
     system.add_variable(Variable())
     func = system.__objective_function__
     
-    func.coefficients = [-2, 7, 1, 4]
-    func.purpose = Purpose.MIN
+    # func.coefficients = [-2, 7, 1, 4]
+    # func.purpose = Purpose.MIN
 
-    row = system.create_restriction()
-    row.coefficients = [-4, 1, -4, 1]
-    row.free_member = 16
-    row.sign = Sign.EQUALS
+    # row = system.create_restriction()
+    # row.coefficients = [-4, 1, -4, 1]
+    # row.free_member = 16
+    # row.sign = Sign.EQUALS
 
-    row = system.create_restriction()
-    row.coefficients = [2, 3, 4, 2]
-    row.free_member = 32
-    row.sign = Sign.MORE_OR_EQUAL
+    # row = system.create_restriction()
+    # row.coefficients = [2, 3, 4, 2]
+    # row.free_member = 32
+    # row.sign = Sign.MORE_OR_EQUAL
 
-    row = system.create_restriction()
-    row.coefficients = [3, 5, 2, -3]
-    row.free_member = 22
-    row.sign = Sign.EQUALS
+    # row = system.create_restriction()
+    # row.coefficients = [3, 5, 2, -3]
+    # row.free_member = 22
+    # row.sign = Sign.EQUALS
 
 
 
@@ -116,23 +116,23 @@ if __name__ == "__main__":
 
 
 
-    # func.coefficients = [2, -7, -1, -4]
-    # func.purpose = Purpose.MAX
+    func.coefficients = [2, -7, -1, -4]
+    func.purpose = Purpose.MAX
 
-    # row = system.create_restriction()
-    # row.coefficients = [-3, 1, -4, 1]
-    # row.free_member = 20
-    # row.sign = Sign.EQUALS
+    row = system.create_restriction()
+    row.coefficients = [-3, 1, -4, 1]
+    row.free_member = 20
+    row.sign = Sign.EQUALS
 
-    # row = system.create_restriction()
-    # row.coefficients = [2, 3, 4, 2]
-    # row.free_member = 32
-    # row.sign = Sign.MORE_OR_EQUAL
+    row = system.create_restriction()
+    row.coefficients = [2, 3, 4, 2]
+    row.free_member = 32
+    row.sign = Sign.MORE_OR_EQUAL
 
-    # row = system.create_restriction()
-    # row.coefficients = [4, 5, 2, -3]
-    # row.free_member = 26
-    # row.sign = Sign.MORE_OR_EQUAL
+    row = system.create_restriction()
+    row.coefficients = [4, 5, 2, -3]
+    row.free_member = 26
+    row.sign = Sign.MORE_OR_EQUAL
 
     system_prepare(system)
 
