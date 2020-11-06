@@ -1,6 +1,5 @@
 # This Python file uses the following encoding: utf-8
 from typing import List
-from ConsistentRefinementOfEstimates import ConsistentRefinementOfEstimates
 from SimplexMethod import SimplexTable
 from MainWindow import MainWindow
 import sys
@@ -24,14 +23,14 @@ def matrix_game_calc(matrix: List[List[float]]):
     for row in matrix:
         html += str(row) + "<br>"
     system, min_value = MatrixGame.create_matrix_game(matrix)
-    html += "Для решения будем использовать метод последовательного уточнения оценки<br>"
-    table = ConsistentRefinementOfEstimates(system)
-    html += base_calc(table) + "<br>"
+    html += "Для решения будем использовать метод симлекс-метод в чистом виде<br>"
+    table = SimplexTable(system)
+    html += base_calc(table)
     p, q = MatrixGame.matrix_game_solution(table)
     html += "p = [" + '; '.join(["%8.5f" % (v) for v in p]) + " ]<br>"
     html += "q = [" + '; '.join(["%8.5f" % (v) for v in q]) + " ]<br>"
-    html += "Математическое ожидание выигрыша первого игрока составляет = " 
-    html += "%8.5f" % (-1 / table.__objective_function__.free_member +
+    html += "Цена игры = " 
+    html += "%8.5f" % (1 / table.__objective_function__.free_member +
                        min_value) + "<br>"
     return html
 
