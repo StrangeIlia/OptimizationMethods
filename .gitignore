@@ -24,6 +24,8 @@ Thumbs.db
 *.docx
 *.o
 *.a
+*.png
+*.pyi
 **.stash
 moc_*.*
 ui_*.h

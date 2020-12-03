@@ -11,11 +11,12 @@ class MatrixOnRow
 public:
     typedef     _BaseType       BaseType;
     typedef     _IndexType      IndexType;
-private:
+protected:
     int _rows, _columns;
     std::vector<BaseType> _matrix;
 public:
     MatrixOnRow();
+    ~MatrixOnRow();
     MatrixOnRow(MatrixOnRow&& othen);
     MatrixOnRow(const MatrixOnRow& othen);
     /// Задает матрицу заданного размера, раполняет базовым значением типа
@@ -60,6 +61,13 @@ MatrixOnRow<BaseType, IndexType>::MatrixOnRow() : _rows(0), _columns(0) {
 }
 
 template<class BaseType, class IndexType>
+MatrixOnRow<BaseType, IndexType>::~MatrixOnRow() {
+    _rows = 0;
+    _columns = 0;
+    _matrix.clear();
+}
+
+template<class BaseType, class IndexType>
 MatrixOnRow<BaseType, IndexType>::MatrixOnRow(MatrixOnRow&& othen) :
     _rows(othen._rows), _columns(othen._columns), _matrix(std::move(othen._matrix))  {
     othen._rows = othen._columns = 0;
@@ -85,6 +93,7 @@ MatrixOnRow<BaseType, IndexType>& MatrixOnRow<BaseType, IndexType>::operator = (
     _columns = othen._columns;
     _matrix = std::move(othen._matrix);
     othen._rows = othen._columns = 0;
+    return *this;
 }
 
 template<class BaseType, class IndexType>
