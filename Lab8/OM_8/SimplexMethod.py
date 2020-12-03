@@ -119,7 +119,7 @@ class SimplexTable:
             bestValue = float_info.max
             for i in range(len(self.__rows__)):
                 row = self.__rows__[i]
-                if row.coefficients[column_number] > float_info.epsilon and abs(row.free_member) > float_info.epsilon:
+                if row.coefficients[column_number] > float_info.epsilon:
                     value = row.free_member / row.coefficients[column_number]
                     if value < bestValue:
                         bestValue = value

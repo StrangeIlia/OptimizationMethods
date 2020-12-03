@@ -33,6 +33,6 @@ class Ui_MainWindow(object):
     # setupUi
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"\u0411\u043e\u0439\u0447\u0443\u043a \u0418\u043b\u044c\u044f. \u041b\u0430\u0431 8.", None))
+        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"\u0411\u043e\u0439\u0447\u0443\u043a \u0418\u043b\u044c\u044f. \u041b\u0430\u0431 9.", None))
     # retranslateUi
 

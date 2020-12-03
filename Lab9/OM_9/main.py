@@ -70,8 +70,8 @@ def hess_to_html(hess: Derivative.HessMatrix, variables: List[Symbol]):
         html += "<tr>"
         for col_index in range(len(list_index)):
             j = list_index[col_index]
-            first_var = variables[i]
-            second_var = variables[j]
+            first_var = variables[row_index]
+            second_var = variables[col_index]
             html += "<td>"
             html += "<p>𝜕<span style=\" vertical-align:super;\">2</span>y"
             if i == j:
@@ -80,7 +80,7 @@ def hess_to_html(hess: Derivative.HessMatrix, variables: List[Symbol]):
             else:
                 html += "/𝜕" + to_html(first_var)
                 html += "𝜕" + to_html(second_var)
-            funct = hess.__hess_matrix__[row_index][col_index].__function__
+            funct = hess.__hess_matrix__[i][j].__function__
             html += " = " + replace_symbols(funct, variables)
             html += "</td>"
         html += "</tr>"
@@ -123,11 +123,7 @@ if __name__ == "__main__":
     y += -2*x1*x2 + x1*x3 - 3*x2*x3
     y += 10*x1 - 7*x2 - x3 - 236
 
-    # y = 5*x1**2 + 4*x2**2 + 8*x3**2
-    # y += -x1*x2 + 6*x1*x3 + x2*x3
-    # y += 12*x1 - 2*x2 - x3 + 89
-
-    html = "<html><body><div span style=\"font-size: 11pt\""   
+    html = "<html><body><div span style=\"font-size: 9pt\""   
     html += "<p>Начальное условие системы: </p>"
     html += "<p>y = " + replace_symbols(y, variables) + "</p>"
 
@@ -153,6 +149,7 @@ if __name__ == "__main__":
         hess_matrix = hess(value_dir)      
         #print("Hess: " + str(hess_matrix))
         correct = lg.inv(hess_matrix)
+        print(correct)
         grad = deriav(value_dir)
         html += "<p>∇y = { " + row_to_html(grad) + "}</p>"
         html += "<p>M:</p>"

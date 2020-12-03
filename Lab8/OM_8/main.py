@@ -1,10 +1,11 @@
 from os import system
-from RestrictionSystem import Purpose, RestrictionSystem, Variable
+from RestrictionSystem import ObjectiveFunction, Purpose, RestrictionSystem, Sign, Variable
 from SimplexMethod import SimplexTable
 from MainWindow import MainWindow
 import sys
 from PySide2.QtWidgets import QApplication
-
+import copy
+import SimplexMethodExtensions
 
 def base_calc(table: SimplexTable):
     html = "Начальное состояние системы:"
@@ -17,8 +18,39 @@ def base_calc(table: SimplexTable):
         iteration += 1
     return html
 
-def convert_task():
-    pass
+
+def convert_task(base_system: RestrictionSystem, divider: ObjectiveFunction):
+    if len(base_system.__objective_function__.coefficients) != len(divider.coefficients):
+        return None
+
+    base_system = base_system.to_canonical_form()
+    divider = copy.deepcopy(divider)
+    new_variable_count  = len(base_system.__objective_function__.coefficients)
+    new_variable_count -= len(divider.coefficients)
+    for _ in range(new_variable_count):
+        divider.coefficients.append(0)
+
+    system = RestrictionSystem()
+    function = system.__objective_function__
+    for _ in range(len(divider.coefficients)):
+        system.add_variable(Variable())
+    function.purpose = Purpose.MAX
+    function.coefficients = copy.deepcopy(base_system.__objective_function__.coefficients)
+    function.coefficients.append(base_system.__objective_function__.free_member)
+    function.free_member = 0
+
+    for base_row in base_system.__rows__:
+        row = system.create_restriction()
+        row.coefficients = copy.deepcopy(base_row.coefficients)
+        row.coefficients.append(-base_row.free_member)
+        row.free_member = 0
+
+    row = system.create_restriction()
+    row.coefficients = copy.deepcopy(divider.coefficients)
+    row.coefficients.append(divider.free_member)
+    row.free_member = 1
+
+    return system
 
 if __name__ == "__main__":
     app = QApplication([])
@@ -27,85 +59,63 @@ if __name__ == "__main__":
 
     system = RestrictionSystem()
     function = system.__objective_function__
-    for _ in range(5):
+    for _ in range(4):
         system.add_variable(Variable())
 
-    # function.free_member = 0
-    # function.coefficients = [3, 1, 0, 0, -1]
-    # function.purpose = Purpose.MAX
-    
-    # function.free_member = 6
-    # function.coefficients = [0, 5, 0, 0, 0]
-    # function.purpose = Purpose.MAX
 
-    # row = system.create_restriction()
-    # row.coefficients = [7, 5, 1, 0, 0]
-    # row.free_member = 28
-
-    # row = system.create_restriction()
-    # row.coefficients = [4, -6, 0, 3, 0]
-    # row.free_member = 14
-
-    # row = system.create_restriction()
-    # row.coefficients = [4/3, -2, 0, 1, 0]
-    # row.free_member = 14/3
-
-    # row = system.create_restriction()
-    # row.coefficients = [-3, 4, 0, 0, 1]
-    # row.free_member = 6
-#----------------------------------------    
-    # function.free_member = 0
-    # function.coefficients = [9, -4, 0, 0, 3]
-    # function.purpose = Purpose.MAX
-
-    # row = system.create_restriction()
-    # row.coefficients = [10, 3, 1, 0, 0]
-    # row.free_member = 93
-
-    # row = system.create_restriction()
-    # row.coefficients = [14, -5, 0, -1, 0]
-    # row.free_member = 26
-
-    # row = system.create_restriction()
-    # row.coefficients = [2, -9, 0, 0, -1]
-    # row.free_member = 18
-#-----------------------------------------
     function.free_member = 0
-    function.coefficients = [1, 2, -1, 0, 0]
+    function.coefficients = [9, 3, 2, 1]
     function.purpose = Purpose.MAX
 
     row = system.create_restriction()
-    row.coefficients = [7, 4, 1, 0, 0]
-    row.free_member = 25
+    row.coefficients = [4, 1, 1, 3]
+    row.sign = Sign.LESS_OR_EQUAL
+    row.free_member = 250
 
     row = system.create_restriction()
-    row.coefficients = [3, -4, 0, 1, 0]
-    row.free_member = 10
+    row.coefficients = [1, 0, 3, 1]
+    row.sign = Sign.LESS_OR_EQUAL
+    row.free_member = 80
 
     row = system.create_restriction()
-    row.coefficients = [-1, 3, 0, 0, 1]
-    row.free_member = 3
-#-----------------------------------------
+    row.coefficients = [1, 3, 1, 0]
+    row.sign = Sign.LESS_OR_EQUAL
+    row.free_member = 340
 
-    # for _ in range(2):
-    #     system.add_variable(Variable())
+    divider = ObjectiveFunction()
+    divider.coefficients = [1, 1, 1, 1]
+    divider.free_member = 0
 
-    # function.free_member = 0
-    # function.coefficients = [1, 4]
-    # function.purpose = Purpose.MAX
+    new_system = convert_task(system, divider)
 
-    # row = system.create_restriction()
-    # row.coefficients = [-1, 2]
-    # row.free_member = 2
-    # row.sign = Sign.LESS_OR_EQUAL
+    table = SimplexMethodExtensions.ArtificialBasis(new_system)
+    html = base_calc(table)
 
-    # row = system.create_restriction()
-    # row.coefficients = [3, 2]
-    # row.free_member = 6
-    # row.sign = Sign.LESS_OR_EQUAL
+    variable_count = len(table.__objective_function__.coefficients)
+    variable_count -= 1
+    divider_value = None
+    for i in range(len(table.__basis__)):
+        if table.__basis__[i] == variable_count:
+            divider_value = table.__rows__[i].free_member
+            break
+    
+    if divider_value is None:
+        html += "Решения нет"
+    else:
+        html += "z<span style=\" vertical-align:sub;\">max</span> = "
+        html += "%8.5f" % (table.__objective_function__.free_member)
+        html += "<tr />"
 
-    # html = gomori_calc(system)
-    html = branches_and_borders_calc(system)
+        html += "x = { "
+        for i in range(variable_count):
+            variable_value = 0
+            for j in range(len(table.__basis__)):
+                if i == table.__basis__[j]:
+                    variable_value = table.__rows__[j].free_member
+                    break
+            variable_value /= divider_value
+            html += "%8.5f" % (variable_value) + "; "
+        html += "}"
 
     file = open("result.html", "w")
     file.write(html)
