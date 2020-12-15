@@ -30,7 +30,7 @@ class ConsistentRefinementOfEstimates(SimplexTable):
             bestValue = float_info.max
             row = self.__rows__[row_number]
             for j in range(len(row.coefficients)):
-                if row.coefficients[j] < 0 and abs(self.__objective_function__.coefficients[j]) > 100 * float_info.epsilon:
+                if row.coefficients[j] < 0 and self.__objective_function__.coefficients[j] > 1e-7:
                     value = -self.__objective_function__.coefficients[j] / \
                         row.coefficients[j]
                     if value < bestValue:
@@ -54,7 +54,7 @@ class ConsistentRefinementOfEstimates(SimplexTable):
             second_row = None
             for i in range(0, len(self.__rows__)):
                 row = self.__rows__[i]
-                if abs(row.coefficients[j]) > 100 * float_info.epsilon:
+                if abs(row.coefficients[j]) > 1e-7:
                     if first_row != None:
                         second_row = i
                         break

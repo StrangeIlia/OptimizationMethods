@@ -116,23 +116,41 @@ if __name__ == "__main__":
 
 
 
-    func.coefficients = [2, -7, -1, -4]
+    # func.coefficients = [2, -7, -1, -4]
+    # func.purpose = Purpose.MAX
+
+    # row = system.create_restriction()
+    # row.coefficients = [-3, 1, -4, 1]
+    # row.free_member = 20
+    # row.sign = Sign.EQUALS
+
+    # row = system.create_restriction()
+    # row.coefficients = [2, 3, 4, 2]
+    # row.free_member = 32
+    # row.sign = Sign.MORE_OR_EQUAL
+
+    # row = system.create_restriction()
+    # row.coefficients = [4, 5, 2, -3]
+    # row.free_member = 26
+    # row.sign = Sign.MORE_OR_EQUAL
+
+    func.coefficients = [-3, -5, -7, -6]
     func.purpose = Purpose.MAX
 
     row = system.create_restriction()
-    row.coefficients = [-3, 1, -4, 1]
+    row.coefficients = [-5, 1, -6, 1]
     row.free_member = 20
+    row.sign = Sign.MORE_OR_EQUAL
+
+    row = system.create_restriction()
+    row.coefficients = [1, 3, 4, 5]
+    row.free_member = 27
+    row.sign = Sign.MORE_OR_EQUAL
+
+    row = system.create_restriction()
+    row.coefficients = [4, 7, 2, -3]
+    row.free_member = 24
     row.sign = Sign.EQUALS
-
-    row = system.create_restriction()
-    row.coefficients = [2, 3, 4, 2]
-    row.free_member = 32
-    row.sign = Sign.MORE_OR_EQUAL
-
-    row = system.create_restriction()
-    row.coefficients = [4, 5, 2, -3]
-    row.free_member = 26
-    row.sign = Sign.MORE_OR_EQUAL
 
     system_prepare(system)
 

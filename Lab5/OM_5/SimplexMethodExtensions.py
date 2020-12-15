@@ -101,12 +101,12 @@ class AbstractArtificialBasis(SimplexTable):
             if v == None: 
                 return False
             if v >= count_old_variable:
-                if abs(self.__rows__[i].free_member) < 100 * float_info.epsilon:
+                if abs(self.__rows__[i].free_member) < 1e-7:
                     index = None
                     for j in range(count_old_variable):
                         if self.__basis__.__contains__(j):
                             continue
-                        if abs(self.__rows__[i].coefficients[j]) <= 100 * float_info.epsilon:
+                        if abs(self.__rows__[i].coefficients[j]) < 1e-7:
                             continue
                         index = j
                         break
