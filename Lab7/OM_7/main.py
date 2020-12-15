@@ -135,6 +135,23 @@ if __name__ == "__main__":
     row.coefficients = [-1, 3, 0, 0, 1]
     row.free_member = 3
 #-----------------------------------------
+    # function.free_member = 0
+    # function.coefficients = [10, -5, 0, 4, 0]
+    # function.purpose = Purpose.MAX
+
+    # row = system.create_restriction()
+    # row.coefficients = [9, 3, 1, 0, 0]
+    # row.free_member = 75
+
+    # row = system.create_restriction()
+    # row.coefficients = [18, -4, 0, -3, 0]
+    # row.free_member = 22
+
+    # row = system.create_restriction()
+    # row.coefficients = [2, -10, 0, 0, 1]
+    # row.free_member = 18
+
+#-----------------------------------------
 
     # for _ in range(2):
     #     system.add_variable(Variable())
@@ -153,8 +170,8 @@ if __name__ == "__main__":
     # row.free_member = 6
     # row.sign = Sign.LESS_OR_EQUAL
 
-    # html = gomori_calc(system)
-    html = branches_and_borders_calc(system)
+    html = gomori_calc(system)
+    # html = branches_and_borders_calc(system)
 
     file = open("result.html", "w")
     file.write(html)
