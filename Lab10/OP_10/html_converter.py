@@ -48,10 +48,6 @@ def symbol_to_html(symbol: sympy.Symbol):
                 result += "</mi><mn>"
                 result += symbol.name[:i - 1]
                 result += "</mn></msup>"
-                # result = symbol.name[i - 1:]
-                # result += "<span style=\" vertical-align:sub;\">"
-                # result += symbol.name[:i - 1]
-                # result += "</span>"
                 return result
 
 
@@ -62,8 +58,55 @@ def replace_symbols(function: sympy.Symbol):
     return result_html
 
 
-def to_pseudo_html(function: sympy.Symbol):
-    if function.is_Add:
-        pass
-    else:
-        pass
+def to_pseudo_html(symbol: sympy.Symbol):
+    if symbol.is_Number:
+        if symbol.q != 1:
+            result = ""
+            if symbol.p < 0:
+                result += "-\\frac{" + str(-symbol.p) + "}"
+            else:
+                result += "\\frac{" + str(symbol.p) + "}"
+            result += "{" + str(symbol.q) + "}"
+            return result
+        else:
+            return str(symbol)
+
+    elif symbol.is_Mul:
+        result = ""
+        number = None
+        for arg in symbol.args:
+            if arg.is_Number:
+                result += to_pseudo_html(arg)
+                number = arg
+
+        for arg in symbol.args:
+            if arg != number:
+                if arg.is_Add:
+                    result += "(" + to_pseudo_html(arg) + ")"
+                else:
+                    result += to_pseudo_html(arg)
+        return result
+
+    elif symbol.is_Add:
+        sym = " + "
+        result = ""
+        for arg in symbol.args:
+            arg_html = to_pseudo_html(arg)
+            if arg_html[:1] == "-":
+                if result == "":
+                    result += arg_html + sym
+                else:
+                    result = result[:-len(sym)]
+                    result += " - "
+                    result += arg_html[1:] + sym
+            else:
+                result += arg_html + sym
+        return result[:-len(sym)]
+
+    elif symbol.is_Pow:
+        result = to_pseudo_html(symbol.args[0])
+        result += "^" + to_pseudo_html(symbol.args[1])
+        return result
+
+    elif symbol.is_Symbol:
+        return str(symbol)
