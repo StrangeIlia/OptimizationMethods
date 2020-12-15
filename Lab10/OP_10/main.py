@@ -21,15 +21,15 @@ if __name__ == '__main__':
     # Сюда вводит входные данные
     a = 0
     b = 1
+    n = 2
     c1 = 0
     c2 = 0
-
     function = u_der ** 2 + u ** 2 + 2 * x * u
     #--------------------------------------------
 
     new_variables: List[sympy.Symbol] = []
     replacement = create_phi_0(a, b, c1, c2)
-    for i in range(2):
+    for i in range(n):
         C_i = sympy.Symbol("C" + str(i + 1))
         replacement += C_i * create_phi_k(i + 1, a, b)
         new_variables.append(C_i)
