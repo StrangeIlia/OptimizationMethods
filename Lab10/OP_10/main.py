@@ -2,7 +2,6 @@ import sys
 
 import sympy
 from typing import List
-import html_converter
 import MainWindow
 from PySide2.QtWidgets import QApplication
 
@@ -20,6 +19,60 @@ def create_phi_k(k: int, a: float, b: float):
 def create_phi_k_sin(k: int, a: float, b: float):
     x = sympy.Symbol("x")
     return sympy.sin(k * sympy.pi * (x - a) / (b - a))
+
+
+def to_pseudo_html(symbol: sympy.Symbol):
+    if symbol.is_Number:
+        if symbol.q != 1:
+            result = ""
+            if symbol.p < 0:
+                result += "-\\frac{" + str(-symbol.p) + "}"
+            else:
+                result += "\\frac{" + str(symbol.p) + "}"
+            result += "{" + str(symbol.q) + "}"
+            return result
+        else:
+            return str(symbol)
+
+    elif symbol.is_Mul:
+        result = ""
+        number = None
+        for arg in symbol.args:
+            if arg.is_Number:
+                result += to_pseudo_html(arg)
+                number = arg
+
+        for arg in symbol.args:
+            if arg != number:
+                if arg.is_Add:
+                    result += "(" + to_pseudo_html(arg) + ")"
+                else:
+                    result += to_pseudo_html(arg)
+        return result
+
+    elif symbol.is_Add:
+        sym = " + "
+        result = ""
+        for arg in symbol.args:
+            arg_html = to_pseudo_html(arg)
+            if arg_html[:1] == "-":
+                if result == "":
+                    result += arg_html + sym
+                else:
+                    result = result[:-len(sym)]
+                    result += " - "
+                    result += arg_html[1:] + sym
+            else:
+                result += arg_html + sym
+        return result[:-len(sym)]
+
+    elif symbol.is_Pow:
+        result = to_pseudo_html(symbol.args[0])
+        result += "^" + to_pseudo_html(symbol.args[1])
+        return result
+
+    elif symbol.is_Symbol:
+        return str(symbol)
 
 
 # Код конечно костыльный, но зато я его быстро написал хд
@@ -64,10 +117,10 @@ if __name__ == '__main__':
     # --------------------------------------------
     html += "<p>Начальное условие: "
     html += "<mathjax>$$"
-    symbol_u = html_converter.to_pseudo_html(u)
+    symbol_u = to_pseudo_html(u)
     html += "I\{" + symbol_u + "\} = "
     html += "\\int\\limits_{" + str(a) + "}^{" + str(b) + "}"
-    html += html_converter.to_pseudo_html(function)
+    html += to_pseudo_html(function)
     html += "\\, dx, \\quad " + symbol_u + "(" + str(a) + ") = "
     html += str(c1) + ", \\quad " + symbol_u + "(" + str(b)
     html += ") = " + str(c2) + ", \\quad n = " + str(n)
@@ -77,7 +130,7 @@ if __name__ == '__main__':
     replacement = create_phi_0(a, b, c1, c2)
     html += "<p>Найдем значения <mathjax>\(\\varphi_k:\)</mathjax></p>"
     html += "<p><mathjax>$$\\varphi_0 = "
-    html += html_converter.to_pseudo_html(replacement)
+    html += to_pseudo_html(replacement)
     html += "$$</mathjax></p>"
     for i in range(n):
         C_i = sympy.Symbol("C_" + str(i + 1))
@@ -85,19 +138,19 @@ if __name__ == '__main__':
         replacement += phi_i
         new_variables.append(C_i)
         html += "<p><mathjax>$$\\varphi_" + str(i + 1) + " = "
-        html += html_converter.to_pseudo_html(phi_i)
+        html += to_pseudo_html(phi_i)
         html += "$$</mathjax></p>"
 
     html += "<p>Разложим интеграл на составляющие: "
     html += "<mathjax>$$"
-    symbol_u = html_converter.to_pseudo_html(u)
+    symbol_u = to_pseudo_html(u)
     html += "I\{" + symbol_u + "\} = "
 
     function = function.expand()
     elements = ""
     for s in function.args:
         elements += "\\int\\limits_{" + str(a) + "}^{" + str(b) + "}"
-        elements += html_converter.to_pseudo_html(s)
+        elements += to_pseudo_html(s)
         elements += "\\, dx + "
     elements = elements[:-2]
     html += elements
@@ -110,15 +163,15 @@ if __name__ == '__main__':
     for s in function.args:
         html += "<p><mathjax>$$"
         html += "\\int\\limits_{" + str(a) + "}^{" + str(b) + "}"
-        html += html_converter.to_pseudo_html(s.expand())
+        html += to_pseudo_html(s.expand())
         html += "\\, dx = "
         s = s.subs(u, replacement)
         s = s.subs(u_der, replacement.diff(x))
         html += "\\int\\limits_{" + str(a) + "}^{" + str(b) + "}"
-        html += html_converter.to_pseudo_html(s.expand())
+        html += to_pseudo_html(s.expand())
         html += "\\, dx = "
         s = sympy.integrate(s, (x, a, b))
-        html += html_converter.to_pseudo_html(s.expand())
+        html += to_pseudo_html(s.expand())
         if integral is None:
             integral = s
         else:
@@ -129,13 +182,13 @@ if __name__ == '__main__':
 
     function_f = "Ф("
     for c in new_variables:
-        function_f += html_converter.to_pseudo_html(c) + ", "
+        function_f += to_pseudo_html(c) + ", "
     function_f = function_f[:-2] + ")"
 
     html += "<p>Найдем определенный интеграл данного выражения: </p>"
     html += "<p><mathjax>$$" + function_f
     html += " = I\{" + symbol_u + "\} = "
-    html += html_converter.to_pseudo_html(integral)
+    html += to_pseudo_html(integral)
     html += "$$</mathjax></p>"
 
     html += "<p>Для выполнения условия экстремума необходимо решить следующию систему: </p>"
@@ -146,8 +199,8 @@ if __name__ == '__main__':
     for symbol in new_variables:
         der = integral.diff(symbol)
         cases += " \\displaystyle \\frac{\\partial Ф}{\\partial "
-        cases += html_converter.to_pseudo_html(symbol) + "} = "
-        cases += html_converter.to_pseudo_html(der) + " = 0 \\\\"
+        cases += to_pseudo_html(symbol) + "} = "
+        cases += to_pseudo_html(der) + " = 0 \\\\"
         rows.append(sympy.Eq(der, 0))
     cases = cases[:-2]
     html += cases
@@ -160,8 +213,8 @@ if __name__ == '__main__':
     variables_values = ""
     result = replacement
     for var in new_variables:
-        variables_values += html_converter.to_pseudo_html(var)
-        variables_values += " = " + html_converter.to_pseudo_html(solution_slay[var])
+        variables_values += to_pseudo_html(var)
+        variables_values += " = " + to_pseudo_html(solution_slay[var])
         variables_values += ", "
         result = result.subs(var, solution_slay[var])
     variables_values = variables_values[:-2]
@@ -173,7 +226,7 @@ if __name__ == '__main__':
     html += "<p>В общем виде выражение для экстремали примет вид: </p>"
     html += "<p><mathjax>$$" + function_f
     html += " = I\{" + symbol_u + "\} = "
-    html += html_converter.to_pseudo_html(result)
+    html += to_pseudo_html(result)
     html += "$$</mathjax></p>"
 
     html = """
