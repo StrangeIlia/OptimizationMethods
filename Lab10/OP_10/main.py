@@ -59,8 +59,8 @@ if __name__ == '__main__':
     n = 2
     c1 = 0
     c2 = 2
-    # function = u_der ** 2 + x ** 2 * u ** 2 + (2 + 2 * x) * u
-    function = x * u_der ** 2 + x ** 5 * u ** 2 + (1 + 2 * x ** 2) * u
+    function = u_der ** 2 + x ** 2 * u ** 2 + (2 + 2 * x) * u
+    # function = x * u_der ** 2 + x ** 5 * u ** 2 + (1 + 2 * x ** 2) * u
     # --------------------------------------------
     html += "<p>Начальное условие: "
     html += "<mathjax>$$"
@@ -88,26 +88,49 @@ if __name__ == '__main__':
         html += html_converter.to_pseudo_html(phi_i)
         html += "$$</mathjax></p>"
 
-    new_function = function
-    new_function = new_function.subs(u, replacement)
-    new_function = new_function.subs(u_der, replacement.diff(x))
+    html += "<p>Разложим интеграл на составляющие: "
+    html += "<mathjax>$$"
+    symbol_u = html_converter.to_pseudo_html(u)
+    html += "I\{" + symbol_u + "\} = "
 
-    new_function = sympy.expand(new_function)
+    function = function.expand()
+    elements = ""
+    for s in function.args:
+        elements += "\\int\\limits_{" + str(a) + "}^{" + str(b) + "}"
+        elements += html_converter.to_pseudo_html(s)
+        elements += "\\, dx + "
+    elements = elements[:-2]
+    html += elements
+    html += "$$</mathjax>"
+    html += "</p>"
 
-    html += "<p>Вид функции после замены <mathjax>\(" + symbol_u +  "\)</mathjax>:</p>"
-    html += "<p><mathjax>$$"
+    html += "<p>Возьмем интегралы по составляющим: </p>"
+
+    integral = None
+    for s in function.args:
+        html += "<p><mathjax>$$"
+        html += "\\int\\limits_{" + str(a) + "}^{" + str(b) + "}"
+        html += html_converter.to_pseudo_html(s.expand())
+        html += "\\, dx = "
+        s = s.subs(u, replacement)
+        s = s.subs(u_der, replacement.diff(x))
+        html += "\\int\\limits_{" + str(a) + "}^{" + str(b) + "}"
+        html += html_converter.to_pseudo_html(s.expand())
+        html += "\\, dx = "
+        s = sympy.integrate(s, (x, a, b))
+        html += html_converter.to_pseudo_html(s.expand())
+        if integral is None:
+            integral = s
+        else:
+            integral += s
+        html += "$$</mathjax></p>"
+
+    integral = integral.expand()
+
     function_f = "Ф("
     for c in new_variables:
         function_f += html_converter.to_pseudo_html(c) + ", "
     function_f = function_f[:-2] + ")"
-    html += function_f
-    html += " = I\{" + symbol_u + "\} = "
-    html += "\\int\\limits_{" + str(a) + "}^{" + str(b) + "}"
-    html += html_converter.to_pseudo_html(new_function)
-    html += "\\, dx"
-    html += "$$</mathjax></p>"
-
-    integral = sympy.integrate(new_function, (x, a, b))
 
     html += "<p>Найдем определенный интеграл данного выражения: </p>"
     html += "<p><mathjax>$$" + function_f
